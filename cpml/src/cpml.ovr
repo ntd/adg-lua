@@ -1,0 +1,12 @@
+-- Include the generated definitions
+include('cpml.def')
+
+defName = 'cpml'
+
+Types['size_t none'] = Types['gsize none']
+Types['gboolean none'] = Types['boolean none']
+Types['gint none'] = Types['int none']
+Types['struct* full'] = Types['struct* none']
+Types['cairo_text_extents_t* none'] = Types['struct* none']
+Types['cairo_path_data_t* none'] = Types['struct* none']
+Types['cairo_path_data_t* full'] = Types['struct* full']

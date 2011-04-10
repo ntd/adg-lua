@@ -1,0 +1,11 @@
+-- Include the generated definitions
+include('adg.def')
+
+defName = 'adg'
+
+Types['gboolean none'] = Types['boolean none']
+Types['gint none'] = Types['int none']
+Types['gulong none'] = Types['unsigned long none']
+Types['gdouble none'] = Types['double none']
+Types['gchar* none'] = Types['char* none']
+Types['AdgDress none'] = Types['int none']
