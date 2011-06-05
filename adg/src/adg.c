@@ -1,5 +1,5 @@
 /*
- * This file needs glob although it is not officialy part of it.
+ * This file needs lgob although it is not officialy part of it.
  *
  * lgob is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
