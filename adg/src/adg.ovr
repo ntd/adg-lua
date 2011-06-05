@@ -3,6 +3,19 @@ include('adg.def')
 
 defName = 'adg'
 
+defType('AdgPair', {
+})
+defFunction('adg_pair_new', {
+    class = 'AdgPair',
+    constructor = true,
+    since = '1.0',
+    ret = 'struct* none'
+})
+defOverride('adg_pair_new', [[
+    special_type_new(L, "adgPairMT", g_new0(AdgPair, 1));
+    return 1;
+]])
+
 Types['gboolean none'] = Types['boolean none']
 Types['gint none'] = Types['int none']
 Types['gulong none'] = Types['unsigned long none']

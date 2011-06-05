@@ -4,7 +4,7 @@
 
 require("lgob.adg")
 
-pair = {}
+pair = adg.Pair.new()
 tmp = {}
 
 
@@ -37,39 +37,39 @@ local path = adg.Path.new()
 
 pair.x = 0
 pair.y = part.D1 / 2
-path:move_to_explicit(pair.x, pair.y)
+path:move_to(pair)
 
 pair.x = part.A - part.B - part.LD2
-path:line_to_explicit(pair.x, pair.y)
+path:line_to(pair)
 
 pair.y = part.D3 / 2
-path:set_named_pair_explicit('D2_POS', pair.x, pair.y)
+path:set_named_pair('D2_POS', pair)
 
 pair.x = pair.x + (part.D1 - part.D2) / 2
 pair.y = part.D2 / 2
-path:line_to_explicit(pair.x, pair.y)
-path:set_named_pair_explicit('D2I', pair.x, pair.y)
+path:line_to(pair)
+path:set_named_pair('D2I', pair)
 
 pair.x = part.A - part.B
-path:line_to_explicit(pair.x, pair.y)
+path:line_to(pair)
 path:fillet(0.4)
 
 pair.x = part.A - part.B
 pair.y = part.D3 / 2
-path:line_to_explicit(pair.x, pair.y)
-path:set_named_pair_explicit('D3I', pair.x, pair.y)
+path:line_to(pair)
+path:set_named_pair('D3I', pair)
 
 pair.x = part.A
-path:set_named_pair_explicit('East', pair.x, pair.y)
+path:set_named_pair('East', pair)
 
 pair.x = 0
-path:set_named_pair_explicit('West', pair.x, pair.y)
+path:set_named_pair('West', pair)
 
 path:chamfer(0.3, 0.3)
 
 pair.x = part.A - part.B + part.LD3
 pair.y = part.D3 / 2
-path:line_to_explicit(pair.x, pair.y)
+path:line_to(pair)
 
 --primitive = adg_path_over_primitive(path)
 --cpml_primitive_put_point(primitive, 0, tmp)
@@ -81,7 +81,7 @@ path:line_to_explicit(pair.x, pair.y)
 path:chamfer(0.3, 0.3)
 
 pair.y = part.D4 / 2
-path:line_to_explicit(pair.x, pair.y)
+path:line_to(pair)
 
 --primitive = adg_path_over_primitive(path)
 --cpml_primitive_put_point(primitive, 0, tmp)
@@ -92,14 +92,14 @@ path:line_to_explicit(pair.x, pair.y)
 path:fillet(part.RD34)
 
 pair.x = pair.x + part.RD34
-path:set_named_pair_explicit('D4I', pair.x, pair.y)
+path:set_named_pair('D4I', pair)
 
 pair.x = part.A - part.C - part.LD5
-path:line_to_explicit(pair.x, pair.y)
-path:set_named_pair_explicit('D4F', pair.x, pair.y)
+path:line_to(pair)
+path:set_named_pair('D4F', pair)
 
 pair.y = part.D3 / 2
-path:set_named_pair_explicit('D4_POS', pair.x, pair.y)
+path:set_named_pair('D4_POS', pair)
 
 --primitive = adg_path_over_primitive(path)
 --cpml_primitive_put_point(primitive, 0, tmp)
@@ -110,34 +110,34 @@ tmp.y = pair.y
 
 tmp.x = tmp.x - math.cos(math.pi / 4) * part.RD34
 tmp.y = tmp.y - math.sin(math.pi / 4) * part.RD34
-path:set_named_pair_explicit('RD34_R', tmp.x, tmp.y)
+path:set_named_pair('RD34_R', tmp)
 
 tmp.x = tmp.x + part.RD34
 tmp.y = tmp.y + part.RD34
-path:set_named_pair_explicit('RD34_XY', tmp.x, tmp.y)
+path:set_named_pair('RD34_XY', tmp)
 
 pair.x = pair.x + (part.D4 - part.D5) / 2
 pair.y = part.D5 / 2
-path:line_to_explicit(pair.x, pair.y)
-path:set_named_pair_explicit('D5I', pair.x, pair.y)
+path:line_to(pair)
+path:set_named_pair('D5I', pair)
 
 pair.x = part.A - part.C
-path:line_to_explicit(pair.x, pair.y)
+path:line_to(pair)
 
 path:fillet(0.2)
 
 pair.y = part.D6 / 2
-path:line_to_explicit(pair.x, pair.y)
+path:line_to(pair)
 
 --primitive = adg_path_over_primitive(path)
 --cpml_primitive_put_point(primitive, 0, tmp)
---path:set_named_pair_explicit('D5F', tmp.x, tmp.y)
+--path:set_named_pair('D5F', tmp)
 
 path:fillet(0.1)
 
 pair.x = pair.x + part.LD6
-path:line_to_explicit(pair.x, pair.y)
-path:set_named_pair_explicit('D6F', pair.x, pair.y)
+path:line_to(pair)
+path:set_named_pair('D6F', pair)
 
 --primitive = adg_path_over_primitive(path)
 --cpml_primitive_put_point(primitive, 0, tmp)
@@ -149,15 +149,15 @@ path:set_named_pair_explicit('D6F', pair.x, pair.y)
 
 pair.x = part.A - part.LD7
 pair.y = pair.y - (part.C - part.LD7 - part.LD6) / 1.732
-path:line_to_explicit(pair.x, pair.y)
-path:set_named_pair_explicit('D67', pair.x, pair.y)
+path:line_to(pair)
+path:set_named_pair('D67', pair)
 
 pair.y = part.D7 / 2
-path:line_to_explicit(pair.x, pair.y)
+path:line_to(pair)
 
 pair.x = part.A
-path:line_to_explicit(pair.x, pair.y)
-path:set_named_pair_explicit('D7F', pair.x, pair.y)
+path:line_to(pair)
+path:set_named_pair('D7F', pair)
 
 path:reflect_explicit(1, 0)
 path:close()
