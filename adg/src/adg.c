@@ -95,63 +95,8 @@ special_type_new(lua_State *L, const gchar *mt, gpointer ptr)
     lua_setmetatable(L, -2);
 }
 
-static AdgPair *
-luapair_fromstack(lua_State *L, int n)
-{
-    Object *object = (Object *) lua_touserdata(L, n);
-    AdgPair *pair = NULL;
-
-    if (object != NULL)
-        pair = object->pointer;
-
-    if (pair == NULL)
-        luaL_typerror(L, n, "AdgPair");
-
-    return pair;
-}
-
 static int
-luapair_index(lua_State *L)
-{
-    AdgPair *pair = luapair_fromstack(L, 1);
-    const gchar *key = luaL_checkstring(L, 2);
-
-    if (strcmp(key, "x") == 0) {
-        lua_pushnumber(L, pair->x);
-    } else if (strcmp(key, "y") == 0) {
-        lua_pushnumber(L, pair->y);
-    } else {
-        return 0;
-    }
-
-    return 1;
-}
-
-static int
-luapair_newindex(lua_State *L)
-{
-    AdgPair *pair = luapair_fromstack(L, 1);
-    const gchar *key = luaL_checkstring(L, 2);
-
-    if (strcmp(key, "x") == 0) {
-        pair->x = lua_tonumber(L, 3);
-    } else if (strcmp(key, "y") == 0) {
-        pair->y = lua_tonumber(L, 3);
-    }
-
-    return 0;
-}
-
-static int
-luapair_tostring(lua_State *L)
-{
-    AdgPair *pair = luapair_fromstack(L, 1);
-    lua_pushfstring(L, "(%f, %f)", pair->x, pair->y);
-    return 1;
-}
-
-static int
-luapair_gc(lua_State *L)
+special_gc(lua_State *L)
 {
     Object *object = (Object *) lua_touserdata(L, 1);
 
@@ -162,6 +107,74 @@ luapair_gc(lua_State *L)
 
     return 0;
 }
+
+static gpointer
+l_checkspecial(lua_State *L, int n)
+{
+    Object *object = (Object *) lua_touserdata(L, n);
+    gpointer pointer = NULL;
+
+    if (object != NULL)
+        pointer = object->pointer;
+
+    if (pointer == NULL)
+        luaL_typerror(L, n, "special type");
+
+    return pointer;
+}
+
+
+/**
+ * l_checkpairfield:
+ * @L: lua state
+ * @n: index in the stack of the AdgPair
+ *
+ * Given an AdgPair special object at index n and a key at index n+1,
+ * returns a pointer to the requested field on the provided instance.
+ * An exception is raised on errors or if the field name is invalid.
+ *
+ * Returns: a pointer to the field on the AdgPair instance.
+ **/
+static gdouble *
+l_checkpairfield(lua_State *L, int n)
+{
+    AdgPair *pair = (AdgPair *) l_checkspecial(L, n);
+    const gchar *key = luaL_checkstring(L, n + 1);
+
+    if (strcmp(key, "x") == 0) {
+        return & pair->x;
+    } else if (strcmp(key, "y") == 0) {
+        return & pair->y;
+    }
+
+    luaL_argerror(L, n + 1, "field not found");
+    return NULL;
+}
+
+static int
+l_pair_index(lua_State *L)
+{
+    gdouble *value = l_checkpairfield(L, 1);
+    lua_pushnumber(L, *value);
+    return 1;
+}
+
+static int
+l_pair_newindex(lua_State *L)
+{
+    gdouble *value = l_checkpairfield(L, 1);
+    *value = lua_tonumber(L, 3);
+    return 0;
+}
+
+static int
+l_pair_tostring(lua_State *L)
+{
+    AdgPair *pair = (AdgPair *) l_checkspecial(L, 1);
+    lua_pushfstring(L, "(%f, %f)", pair->x, pair->y);
+    return 1;
+}
+
 
 static void
 _wrap_adg_init(lua_State *L)
@@ -188,10 +201,10 @@ static void
 _wrap_adg_ret(lua_State *L)
 {
     static const luaL_reg meta_methods[] = {
-        { "__index",    luapair_index },
-        { "__newindex", luapair_newindex },
-        { "__tostring", luapair_tostring },
-        { "__gc",       luapair_gc },
+        { "__index",    l_pair_index },
+        { "__newindex", l_pair_newindex },
+        { "__tostring", l_pair_tostring },
+        { "__gc",       special_gc },
         { NULL, NULL }
     };
 
