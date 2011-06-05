@@ -6,6 +6,7 @@ require("lgob.adg")
 
 pair = adg.Pair.new()
 tmp = adg.Pair.new()
+map = adg.Matrix.new()
 
 
 ---------------------------------------- PHYSICAL DATA
@@ -173,9 +174,9 @@ canvas:set_paper('iso_a4', gtk.PAGE_ORIENTATION_LANDSCAPE)
 canvas:add(adg.Stroke.new(path))
 canvas:add(adg.Stroke.new(edges))
 
---cairo_matrix_init_translate(&map, 140, 180);
---cairo_matrix_scale(&map, 8, 8);
---canvas:set_local_map(map);
+map.x0 = 140; map.y0 = 180
+map.xx = 8; map.yy = 8
+canvas:set_local_map(map)
 
 local scrolled_window = gtk.ScrolledWindow.new()
 scrolled_window:add(adg.GtkLayout.new_with_canvas(canvas))
@@ -183,8 +184,9 @@ scrolled_window:add(adg.GtkLayout.new_with_canvas(canvas))
 ---------------------------------------- THE RENDERING PROCESS
 
 local window = gtk.Window.new(gtk.WINDOW_TOPLEVEL)
-window:set("title", "ADG demo", "window-position", gtk.WIN_POS_CENTER)
-window:connect("delete-event", gtk.main_quit) 
+window:set_title("ADG demo")
+window:set_window_position(gtk.WIN_POS_CENTER)
+window:connect("delete-event", gtk.main_quit)
 
 window:add(scrolled_window)
 window:show_all()

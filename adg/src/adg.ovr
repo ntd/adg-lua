@@ -16,9 +16,27 @@ defOverride('adg_pair_new', [[
     return 1;
 ]])
 
+defType('AdgMatrix', {
+})
+defFunction('adg_matrix_new', {
+    class = 'AdgMatrix',
+    constructor = true,
+    since = '1.0',
+    ret = 'struct* none'
+})
+defOverride('adg_matrix_new', [[
+    AdgMatrix *matrix = g_new(AdgMatrix, 1);
+    cairo_matrix_init_identity(matrix);
+    special_type_new(L, "adgMatrixMT", matrix);
+    return 1;
+]])
+
 Types['gboolean none'] = Types['boolean none']
 Types['gint none'] = Types['int none']
 Types['gulong none'] = Types['unsigned long none']
 Types['gdouble none'] = Types['double none']
 Types['gchar* none'] = Types['char* none']
 Types['AdgDress none'] = Types['int none']
+
+--fixVersion('adg_entity_set_local_map', '1.0', nil, '99.0')
+--defFunctions['adg_entity_set_local_map'].accessorSince = nil
