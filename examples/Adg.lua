@@ -5,7 +5,7 @@
 require("lgob.adg")
 
 pair = adg.Pair.new()
-tmp = {}
+tmp = adg.Pair.new()
 
 
 ---------------------------------------- PHYSICAL DATA
