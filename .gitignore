@@ -1,0 +1,16 @@
+.deps/
+.libs/
+*.la
+*.lo
+*.loT
+*.o
+/aclocal.m4
+/autom4te.cache/
+/ChangeLog
+/config.log
+/config.status
+/configure
+/INSTALL
+/libtool
+Makefile
+Makefile.in
