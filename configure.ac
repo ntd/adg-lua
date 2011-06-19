@@ -1,8 +1,8 @@
-m4_define([adg_lua_version],[0.6.3])
+m4_define([adg_lua_version],[0.0.1])
 
-m4_define([cpml_prereq],adg_lua_version)
+m4_define([cpml_prereq],[0.6.3])
 m4_define([cpml_api_version],1.0)
-m4_define([adg_prereq],adg_lua_version)
+m4_define([adg_prereq],cpml_prereq)
 m4_define([adg_api_version],1.0)
 m4_define([lua_prereq],5.1.0)
 
@@ -27,7 +27,6 @@ AC_PROG_SED
 PKG_PROG_PKG_CONFIG
 AC_PATH_PROG([PARSER],[lgob-gir-parser],[/usr/bin/lgob-gir-parser])
 AC_PATH_PROG([GENERATOR],[lgob-generator],[/usr/bin/lgob-generator])
-
 
 # Libtool initialization
 
@@ -82,8 +81,8 @@ AC_MSG_NOTICE([generating report
 
 AC_PACKAGE_NAME adg_lua_version will be built with the following options:
 ----------------------------------------------------------
-                   CPML API version: cpml_api_version
-                    ADG API version: adg_api_version
-                 LGob header prefix: ${lua_includedir}
-Where the modules will be installed: ${lua_cmoduledir}
+              CPML bindings version: cpml_api_version
+               ADG bindings version: adg_api_version
+                Path to Lua headers: ${lua_includedir}
+              Path to Lua C modules: ${lua_cmoduledir}
 ])
