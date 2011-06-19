@@ -51,12 +51,12 @@ PKG_CHECK_MODULES([LUA],[lua >= ]lua_prereq)
 AC_ARG_WITH(lua-includedir,
 	    [AS_HELP_STRING([--with-lua-includedir],
 			    [prefix where Lua headers are installed @<:@INSTALL_INC@:>@])],
-            lua_includedir="$withval", lua_includedir="$(${PKG_CONFIG} --variable=INSTALL_INC lua)")
+            lua_includedir="$withval", lua_includedir="$(${PKG_CONFIG} --variable=INSTALL_INC --define-variable=prefix='${prefix}' lua)")
 AC_SUBST([LUA_INCLUDEDIR],"$lua_includedir")
 AC_ARG_WITH(lua-cmoduledir,
 	    [AS_HELP_STRING([--with-lua-cmoduledir],
 			    [prefix where Lua C modules are installed @<:@INSTALL_CMOD@:>@])],
-            lua_cmoduledir="$withval", lua_cmoduledir="$(${PKG_CONFIG} --variable=INSTALL_CMOD lua)")
+            lua_cmoduledir="$withval", lua_cmoduledir="$(${PKG_CONFIG} --variable=INSTALL_CMOD --define-variable=prefix='${prefix}' lua)")
 AC_SUBST([LUA_CMODULEDIR],"$lua_cmoduledir")
 
 
