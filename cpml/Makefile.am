@@ -1,7 +1,8 @@
 include $(top_srcdir)/build/Makefile.am.common
 
 API_VERSION=			CPML_API_VERSION
-BUILT_SOURCES=			$(abs_builddir)/cpml.def \
+
+BUILT_SOURCES=			$(abs_builddir)/api.lua \
 				$(abs_builddir)/iface.c
 CLEANFILES=		 	generator.log \
 				parser.log \
@@ -18,8 +19,8 @@ cpml_la_LDFLAGS=		-module \
 				$(CPML_LIBS)
 
 
-$(abs_builddir)/iface.c: $(abs_srcdir)/cpml.ovr $(abs_builddir)/cpml.def
-	$(GENERATOR) -i $< -o $@ -l "$(abs_builddir)/generator.log" -v $(API_VERSION)
+$(abs_builddir)/iface.c: $(abs_srcdir)/cpml.ovr $(abs_builddir)/api.lua
+	$(GENERATE) -i $< -o $@ -v $(API_VERSION)
 
-$(abs_builddir)/cpml.def: /usr/share/gir-1.0/Cpml-1.0.gir
-	$(PARSER) -i $< -o $@ -l "$(abs_builddir)/parser.log"
+$(abs_builddir)/api.lua: /usr/share/gir-1.0/Cpml-1.0.gir
+	$(PARSE) -i $< -o $@

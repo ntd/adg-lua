@@ -18,8 +18,7 @@ along with adg-lua.  If not, see <http://www.gnu.org/licenses/>.
 
 --]]
 
-include('adg.def')
-
+require 'api'
 defName = 'adg'
 
 defType('AdgPair', {

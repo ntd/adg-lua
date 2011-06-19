@@ -18,8 +18,7 @@ along with adg-lua.  If not, see <http://www.gnu.org/licenses/>.
 
 --]]
 
-include('cpml.def')
-
+require 'api'
 defName = 'cpml'
 
 Types['size_t none'] = Types['gsize none']

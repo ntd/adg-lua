@@ -1,6 +1,5 @@
 .deps/
 .libs/
-*.def
 *.la
 *.lo
 *.loT
@@ -15,6 +14,3 @@
 /libtool
 Makefile
 Makefile.in
-generator.log
-iface.c
-parser.log

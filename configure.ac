@@ -25,8 +25,8 @@ AM_SILENT_RULES([yes])
 AC_PROG_CC
 AC_PROG_SED
 PKG_PROG_PKG_CONFIG
-AC_PATH_PROG([PARSER],[lgob-gir-parser],[/usr/bin/lgob-gir-parser])
-AC_PATH_PROG([GENERATOR],[lgob-generator],[/usr/bin/lgob-generator])
+AC_PATH_PROG([LGOB_PARSER],[lgob-gir-parser],[/usr/bin/lgob-gir-parser])
+AC_PATH_PROG([LGOB_GENERATOR],[lgob-generator],[/usr/bin/lgob-generator])
 
 # Libtool initialization
 
