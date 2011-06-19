@@ -1,0 +1,7 @@
+ADG-Lua 0.0.1
+=============
+
+Initial release. This adg-lua version is the first one and will be
+used to provide bindings for adg-0.6.4 (together with the internal
+cpml-0.6.4 library). Anyway it is expected to work with more recent
+versions too.
