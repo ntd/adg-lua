@@ -2,7 +2,7 @@
 
 -- ADG example.
 
-require("lgob.adg")
+require('lgob.adg')
 
 pair = adg.Pair.new()
 tmp = adg.Pair.new()
@@ -27,7 +27,7 @@ local part = {
     LD6  = 1,
     C    = 2,
     D7   = 2.5,
-    LD7  = 0
+    LD7  = 0.5
 }
 
 
@@ -72,23 +72,23 @@ pair.x = part.A - part.B + part.LD3
 pair.y = part.D3 / 2
 path:line_to(pair)
 
---primitive = adg_path_over_primitive(path)
---cpml_primitive_put_point(primitive, 0, tmp)
---path:set_named_pair("D3I_X", tmp)
+primitive = path:over_primitive()
+primitive:put_point(0, tmp)
+path:set_named_pair('D3I_X', tmp)
 
---cpml_primitive_put_point(primitive, -1, tmp)
---path:set_named_pair("D3I_Y", tmp)
+primitive:put_point(-1, tmp)
+path:set_named_pair('D3I_Y', tmp)
 
 path:chamfer(0.3, 0.3)
 
 pair.y = part.D4 / 2
 path:line_to(pair)
 
---primitive = adg_path_over_primitive(path)
---cpml_primitive_put_point(primitive, 0, tmp)
---path:set_named_pair("D3F_Y", tmp)
---cpml_primitive_put_point(primitive, -1, tmp)
---path:set_named_pair("D3F_X", tmp)
+primitive = path:over_primitive()
+primitive:put_point(0, tmp)
+path:set_named_pair('D3F_Y', tmp)
+primitive:put_point(-1, tmp)
+path:set_named_pair('D3F_X', tmp)
 
 path:fillet(part.RD34)
 
@@ -102,10 +102,10 @@ path:set_named_pair('D4F', pair)
 pair.y = part.D3 / 2
 path:set_named_pair('D4_POS', pair)
 
---primitive = adg_path_over_primitive(path)
---cpml_primitive_put_point(primitive, 0, tmp)
---tmp.x = tmp.x + part.RD34
---path:set_named_pair("RD34", tmp)
+primitive = path:over_primitive()
+primitive:put_point(0, tmp)
+tmp.x = tmp.x + part.RD34
+path:set_named_pair('RD34', tmp)
 tmp.x = pair.x
 tmp.y = pair.y
 
@@ -130,9 +130,9 @@ path:fillet(0.2)
 pair.y = part.D6 / 2
 path:line_to(pair)
 
---primitive = adg_path_over_primitive(path)
---cpml_primitive_put_point(primitive, 0, tmp)
---path:set_named_pair('D5F', tmp)
+primitive = path:over_primitive()
+primitive:put_point(0, tmp)
+path:set_named_pair('D5F', tmp)
 
 path:fillet(0.1)
 
@@ -140,13 +140,13 @@ pair.x = pair.x + part.LD6
 path:line_to(pair)
 path:set_named_pair('D6F', pair)
 
---primitive = adg_path_over_primitive(path)
---cpml_primitive_put_point(primitive, 0, tmp)
---path:set_named_pair("D6I_X", tmp)
+primitive = path:over_primitive()
+primitive:put_point(0, tmp)
+path:set_named_pair('D6I_X', tmp)
 
---primitive = adg_path_over_primitive(path)
---cpml_primitive_put_point(primitive, -1, tmp)
---path:set_named_pair("D6I_Y", tmp)
+primitive = path:over_primitive()
+primitive:put_point(-1, tmp)
+path:set_named_pair('D6I_Y', tmp)
 
 pair.x = part.A - part.LD7
 pair.y = pair.y - (part.C - part.LD7 - part.LD6) / 1.732
@@ -184,9 +184,9 @@ scrolled_window:add(adg.GtkLayout.new_with_canvas(canvas))
 ---------------------------------------- THE RENDERING PROCESS
 
 local window = gtk.Window.new(gtk.WINDOW_TOPLEVEL)
-window:set_title("ADG demo")
+window:set_title('ADG demo')
 window:set_window_position(gtk.WIN_POS_CENTER)
-window:connect("delete-event", gtk.main_quit)
+window:connect('delete-event', gtk.main_quit)
 
 window:add(scrolled_window)
 window:show_all()

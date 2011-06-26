@@ -6,11 +6,11 @@ BUILT_SOURCES=			$(abs_builddir)/api.lua \
 CLEANFILES=		 	generator.log \
 				parser.log \
 				$(BUILT_SOURCES)
-EXTRA_DIST=			adg.ovr
+EXTRA_DIST=			adg.c \
+				adg.ovr
 
 cmoddir=			$(LUA_CMODULEDIR)/lgob
 cmod_LTLIBRARIES= 		adg.la
-adg_la_SOURCES=			adg.c
 nodist_adg_la_SOURCES=		iface.c
 adg_la_CFLAGS=			-I $(LUA_INCLUDEDIR) \
 				$(ADG_CFLAGS)

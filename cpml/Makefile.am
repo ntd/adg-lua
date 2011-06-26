@@ -7,11 +7,11 @@ BUILT_SOURCES=			$(abs_builddir)/api.lua \
 CLEANFILES=		 	generator.log \
 				parser.log \
 				$(BUILT_SOURCES)
-EXTRA_DIST=			cpml.ovr
+EXTRA_DIST=			cpml.c \
+				cpml.ovr
 
 cmoddir=			$(LUA_CMODULEDIR)/lgob
 cmod_LTLIBRARIES= 		cpml.la
-cpml_la_SOURCES=		cpml.c
 nodist_cpml_la_SOURCES=		iface.c
 cpml_la_CFLAGS=			-I $(LUA_INCLUDEDIR) \
 				$(CPML_CFLAGS)

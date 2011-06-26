@@ -21,34 +21,22 @@ along with adg-lua.  If not, see <http://www.gnu.org/licenses/>.
 require 'api'
 defName = 'adg'
 
-defType('AdgPair', {
-})
-defFunction('adg_pair_new', {
-    class = 'AdgPair',
-    constructor = true,
-    since = '1.0',
-    ret = 'struct* none'
-})
-defOverride('adg_pair_new', [[
-    special_type_new(L, "adgPairMT", g_new0(AdgPair, 1));
-    return 1;
-]])
 
-defType('AdgMatrix', {
-})
-defFunction('adg_matrix_new', {
-    class = 'AdgMatrix',
-    constructor = true,
-    since = '1.0',
-    ret = 'struct* none'
-})
-defOverride('adg_matrix_new', [[
-    AdgMatrix *matrix = g_new(AdgMatrix, 1);
-    cairo_matrix_init_identity(matrix);
-    special_type_new(L, "adgMatrixMT", matrix);
-    return 1;
-]])
+-- Additional types
 
+Types['CpmlPrimitive* none'] = {
+    arg = function(pos, tables)
+        table.insert(tables['args'], string.format('arg%i', pos))
+        table.insert(tables['input'], string.format([[
+        Object* oarg%i = lua_touserdata(L, %i);
+        void* arg%i = oarg%i ? oarg%i->pointer : NULL;]],
+        pos, pos, pos, pos, pos))
+    end,
+    ret = function(tables)
+        table.insert(tables['return'], 'special_type_new(L, "cpmlPrimitiveMT", (gpointer) ret);')
+    end,
+    type = 'gconstpointer',
+}
 Types['gboolean none'] = Types['boolean none']
 Types['gint none'] = Types['int none']
 Types['gulong none'] = Types['unsigned long none']
@@ -56,5 +44,62 @@ Types['gdouble none'] = Types['double none']
 Types['gchar* none'] = Types['char* none']
 Types['AdgDress none'] = Types['int none']
 
---fixVersion('adg_entity_set_local_map', '1.0', nil, '99.0')
---defFunctions['adg_entity_set_local_map'].accessorSince = nil
+
+-- AdgPair
+
+defType('AdgPair', {})
+
+defFunction('adg_pair_new', {
+    class = 'AdgPair',
+    constructor = true,
+    since = '1.0',
+    ret = 'struct* none'
+})
+
+defOverride('adg_pair_new', [[
+    special_type_new(L, "adgPairMT", g_new0(AdgPair, 1));
+    return 1;
+]])
+
+
+-- AdgMatrix
+
+defType('AdgMatrix', {})
+
+defFunction('adg_matrix_new', {
+    class = 'AdgMatrix',
+    constructor = true,
+    since = '1.0',
+    ret = 'struct* none'
+})
+
+defOverride('adg_matrix_new', [[
+    AdgMatrix *matrix = g_new(AdgMatrix, 1);
+    cairo_matrix_init_identity(matrix);
+    special_type_new(L, "adgMatrixMT", matrix);
+    return 1;
+]])
+
+defOverride('adg_matrix_new', [[
+    AdgMatrix *matrix = g_new(AdgMatrix, 1);
+    cairo_matrix_init_identity(matrix);
+    special_type_new(L, "adgMatrixMT", matrix);
+    return 1;
+]])
+
+
+-- Custom redefinitions
+
+defFunction('adg_path_over_primitive', {
+    class = 'AdgPath',
+    since = '1.0',
+    args = {'GObject* none'},
+    ret = 'CpmlPrimitive* none'
+})
+
+defFunction('adg_path_last_primitive', {
+    class = 'AdgPath',
+    since = '1.0',
+    args = {'GObject* none'},
+    ret = 'CpmlPrimitive* none'
+})

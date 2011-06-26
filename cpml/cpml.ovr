@@ -21,6 +21,8 @@ along with adg-lua.  If not, see <http://www.gnu.org/licenses/>.
 require 'api'
 defName = 'cpml'
 
+defType('CpmlPrimitive', {})
+
 Types['size_t none'] = Types['gsize none']
 Types['gboolean none'] = Types['boolean none']
 Types['gint none'] = Types['int none']
