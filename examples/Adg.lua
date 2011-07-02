@@ -2,11 +2,8 @@
 
 -- ADG example.
 
-require('lgob.adg')
 
-pair = adg.Pair.new()
-tmp = adg.Pair.new()
-map = adg.Matrix.new()
+require('lgob.adg')
 
 
 ---------------------------------------- PHYSICAL DATA
@@ -27,153 +24,305 @@ local part = {
     LD6  = 1,
     C    = 2,
     D7   = 2.5,
-    LD7  = 0.5
+    LD7  = 0.5,
+
+    -- Cached data
+    the  = {}
 }
 
+function part:model()
+    if not self.the.model then
+	local pair = adg.Pair.new()
+	local tmp = adg.Pair.new()
+	local path = adg.Path.new()
 
----------------------------------------- DEFINING THE MODEL
+	pair.x = 0
+	pair.y = self.D1 / 2
+	path:move_to(pair)
+	path:set_named_pair('D1I', pair);
 
--- path
-local path = adg.Path.new()
+	pair.x = self.A - self.B - self.LD2
+	path:line_to(pair)
 
-pair.x = 0
-pair.y = part.D1 / 2
-path:move_to(pair)
+	pair.y = self.D3 / 2
+	path:set_named_pair('D2_POS', pair)
 
-pair.x = part.A - part.B - part.LD2
-path:line_to(pair)
+	pair.x = pair.x + (self.D1 - self.D2) / 2
+	pair.y = self.D2 / 2
+	path:line_to(pair)
+	path:set_named_pair('D2I', pair)
 
-pair.y = part.D3 / 2
-path:set_named_pair('D2_POS', pair)
+	pair.x = self.A - self.B
+	path:line_to(pair)
+	path:fillet(0.4)
 
-pair.x = pair.x + (part.D1 - part.D2) / 2
-pair.y = part.D2 / 2
-path:line_to(pair)
-path:set_named_pair('D2I', pair)
+	pair.x = self.A - self.B
+	pair.y = self.D3 / 2
+	path:line_to(pair)
+	path:set_named_pair('D3I', pair)
 
-pair.x = part.A - part.B
-path:line_to(pair)
-path:fillet(0.4)
+	pair.x = self.A
+	path:set_named_pair('East', pair)
 
-pair.x = part.A - part.B
-pair.y = part.D3 / 2
-path:line_to(pair)
-path:set_named_pair('D3I', pair)
+	pair.x = 0
+	path:set_named_pair('West', pair)
 
-pair.x = part.A
-path:set_named_pair('East', pair)
+	path:chamfer(0.3, 0.3)
 
-pair.x = 0
-path:set_named_pair('West', pair)
+	pair.x = self.A - self.B + self.LD3
+	pair.y = self.D3 / 2
+	path:line_to(pair)
 
-path:chamfer(0.3, 0.3)
+	primitive = path:over_primitive()
+	primitive:put_point(0, tmp)
+	path:set_named_pair('D3I_X', tmp)
 
-pair.x = part.A - part.B + part.LD3
-pair.y = part.D3 / 2
-path:line_to(pair)
+	primitive:put_point(-1, tmp)
+	path:set_named_pair('D3I_Y', tmp)
 
-primitive = path:over_primitive()
-primitive:put_point(0, tmp)
-path:set_named_pair('D3I_X', tmp)
+	path:chamfer(0.3, 0.3)
 
-primitive:put_point(-1, tmp)
-path:set_named_pair('D3I_Y', tmp)
+	pair.y = self.D4 / 2
+	path:line_to(pair)
 
-path:chamfer(0.3, 0.3)
+	primitive = path:over_primitive()
+	primitive:put_point(0, tmp)
+	path:set_named_pair('D3F_Y', tmp)
+	primitive:put_point(-1, tmp)
+	path:set_named_pair('D3F_X', tmp)
 
-pair.y = part.D4 / 2
-path:line_to(pair)
+	path:fillet(self.RD34)
 
-primitive = path:over_primitive()
-primitive:put_point(0, tmp)
-path:set_named_pair('D3F_Y', tmp)
-primitive:put_point(-1, tmp)
-path:set_named_pair('D3F_X', tmp)
+	pair.x = pair.x + self.RD34
+	path:set_named_pair('D4I', pair)
 
-path:fillet(part.RD34)
+	pair.x = self.A - self.C - self.LD5
+	path:line_to(pair)
+	path:set_named_pair('D4F', pair)
 
-pair.x = pair.x + part.RD34
-path:set_named_pair('D4I', pair)
+	pair.y = self.D3 / 2
+	path:set_named_pair('D4_POS', pair)
 
-pair.x = part.A - part.C - part.LD5
-path:line_to(pair)
-path:set_named_pair('D4F', pair)
+	primitive = path:over_primitive()
+	primitive:put_point(0, tmp)
+	tmp.x = tmp.x + self.RD34
+	path:set_named_pair('RD34', tmp)
 
-pair.y = part.D3 / 2
-path:set_named_pair('D4_POS', pair)
+	tmp.x = tmp.x - math.cos(math.pi / 4) * self.RD34
+	tmp.y = tmp.y - math.sin(math.pi / 4) * self.RD34
+	path:set_named_pair('RD34_R', tmp)
 
-primitive = path:over_primitive()
-primitive:put_point(0, tmp)
-tmp.x = tmp.x + part.RD34
-path:set_named_pair('RD34', tmp)
-tmp.x = pair.x
-tmp.y = pair.y
+	tmp.x = tmp.x + self.RD34
+	tmp.y = tmp.y + self.RD34
+	path:set_named_pair('RD34_XY', tmp)
 
-tmp.x = tmp.x - math.cos(math.pi / 4) * part.RD34
-tmp.y = tmp.y - math.sin(math.pi / 4) * part.RD34
-path:set_named_pair('RD34_R', tmp)
+	pair.x = pair.x + (self.D4 - self.D5) / 2
+	pair.y = self.D5 / 2
+	path:line_to(pair)
+	path:set_named_pair('D5I', pair)
 
-tmp.x = tmp.x + part.RD34
-tmp.y = tmp.y + part.RD34
-path:set_named_pair('RD34_XY', tmp)
+	pair.x = self.A - self.C
+	path:line_to(pair)
 
-pair.x = pair.x + (part.D4 - part.D5) / 2
-pair.y = part.D5 / 2
-path:line_to(pair)
-path:set_named_pair('D5I', pair)
+	path:fillet(0.2)
 
-pair.x = part.A - part.C
-path:line_to(pair)
+	pair.y = self.D6 / 2
+	path:line_to(pair)
 
-path:fillet(0.2)
+	primitive = path:over_primitive()
+	primitive:put_point(0, tmp)
+	path:set_named_pair('D5F', tmp)
 
-pair.y = part.D6 / 2
-path:line_to(pair)
+	path:fillet(0.1)
 
-primitive = path:over_primitive()
-primitive:put_point(0, tmp)
-path:set_named_pair('D5F', tmp)
+	pair.x = pair.x + self.LD6
+	path:line_to(pair)
+	path:set_named_pair('D6F', pair)
 
-path:fillet(0.1)
+	primitive = path:over_primitive()
+	primitive:put_point(0, tmp)
+	path:set_named_pair('D6I_X', tmp)
 
-pair.x = pair.x + part.LD6
-path:line_to(pair)
-path:set_named_pair('D6F', pair)
+	primitive = path:over_primitive()
+	primitive:put_point(-1, tmp)
+	path:set_named_pair('D6I_Y', tmp)
 
-primitive = path:over_primitive()
-primitive:put_point(0, tmp)
-path:set_named_pair('D6I_X', tmp)
+	pair.x = self.A - self.LD7
+	pair.y = pair.y - (self.C - self.LD7 - self.LD6) / 1.732050808
+	path:line_to(pair)
+	path:set_named_pair('D67', pair)
 
-primitive = path:over_primitive()
-primitive:put_point(-1, tmp)
-path:set_named_pair('D6I_Y', tmp)
+	pair.y = self.D7 / 2
+	path:line_to(pair)
 
-pair.x = part.A - part.LD7
-pair.y = pair.y - (part.C - part.LD7 - part.LD6) / 1.732
-path:line_to(pair)
-path:set_named_pair('D67', pair)
+	pair.x = self.A
+	path:line_to(pair)
+	path:set_named_pair('D7F', pair)
 
-pair.y = part.D7 / 2
-path:line_to(pair)
+	path:reflect_explicit(1, 0)
+	path:close()
 
-pair.x = part.A
-path:line_to(pair)
-path:set_named_pair('D7F', pair)
+	self.the.model = path
+    end
 
-path:reflect_explicit(1, 0)
-path:close()
+    return self.the.model
+end
 
--- edges
-local edges = adg.Edges.new_with_source(path)
+function part:edges()
+    if not self.the.edges then
+        self.the.edges = adg.Edges.new_with_source(self:model())
+    end
+
+    return self.the.edges
+end
+
+function part:dimensions()
+    if not self.the.dimensions then
+	local model = self:model()
+	local dim
+
+	self.the.dimensions = {}
+
+	-- North dimensions
+
+	dim = adg.LDim.new_full_from_model(model, '-D3I_X', '-D3F_X', '-D3F_Y', -math.pi/2)
+	dim:set_outside(adg.THREE_STATE_OFF)
+	table.insert(self.the.dimensions, dim)
+
+	dim = adg.LDim.new_full_from_model(model, '-D6I_X', '-D67', '-East', -math.pi/2)
+	dim:set_level(0)
+	dim:switch_extension1(false)
+	table.insert(self.the.dimensions, dim)
+
+	dim = adg.LDim.new_full_from_model(model, '-D6I_X', '-D7F', '-East', -math.pi/2)
+	dim:set_limits('-0.06', nil)
+	table.insert(self.the.dimensions, dim)
+
+	dim = adg.ADim.new_full_from_model(model, '-D6I_Y', '-D6F', '-D6F', '-D67', '-D6F')
+	dim:set_level(2)
+	table.insert(self.the.dimensions, dim)
+
+	dim = adg.RDim.new_full_from_model(model, '-RD34', '-RD34_R', '-RD34_XY')
+	table.insert(self.the.dimensions, dim)
+
+	dim = adg.LDim.new_full_from_model(model, '-DGROOVEI_X', '-DGROOVEF_X', '-DGROOVEX_POS', -math.pi/2)
+	table.insert(self.the.dimensions, dim)
+
+	dim = adg.LDim.new_full_from_model(model, 'D2I', '-D2I', '-D2_POS', math.pi)
+	dim:set_limits('-0.1', nil)
+	dim:set_outside(adg.THREE_STATE_OFF)
+	dim:set_value('\226\140\128 <>')
+	table.insert(self.the.dimensions, dim)
+
+	dim = adg.LDim.new_full_from_model(model, 'DGROOVEI_Y', '-DGROOVEI_Y', '-DGROOVEY_POS', math.pi)
+	dim:set_limits('-0.1', nil)
+	dim:set_outside(adg.THREE_STATE_OFF)
+	dim:set_value('\226\140\128 <>')
+	table.insert(self.the.dimensions, dim)
+
+	-- South dimensions
+
+	dim = adg.ADim.new_full_from_model(model, 'D1F', 'D1I', 'D2I', 'D1F', 'D1F')
+	dim:set_level(2)
+	dim:switch_extension2(false)
+	table.insert(self.the.dimensions, dim)
+
+	dim = adg.LDim.new_full_from_model(model, 'D1I', 'LHOLE', 'West', math.pi / 2)
+	dim:switch_extension1(false)
+	table.insert(self.the.dimensions, dim)
+
+	dim = adg.LDim.new_full_from_model(model, 'D1I', 'DGROOVEI_X', 'West', math.pi / 2)
+	dim:switch_extension1(false)
+	dim:set_level(2)
+	table.insert(self.the.dimensions, dim)
+
+	dim = adg.LDim.new_full_from_model(model, 'D4F', 'D6I_X', 'D4_POS', math.pi / 2)
+	dim:set_limits(nil, '+0.2')
+	dim:set_outside(adg.THREE_STATE_OFF)
+	table.insert(self.the.dimensions, dim)
+
+	dim = adg.LDim.new_full_from_model(model, 'D1F', 'D3I_X', 'D2_POS', math.pi / 2)
+	dim:set_level(2)
+	dim:switch_extension2(false)
+	dim:set_outside(adg.THREE_STATE_OFF)
+	table.insert(self.the.dimensions, dim)
+
+	dim = adg.LDim.new_full_from_model(model, 'D3I_X', 'D7F', 'East', math.pi / 2)
+	dim:set_limits(nil, '+0.1')
+	dim:set_level(2)
+	dim:set_outside(adg.THREE_STATE_OFF)
+	dim:switch_extension2(false)
+	table.insert(self.the.dimensions, dim)
+
+	dim = adg.LDim.new_full_from_model(model, 'D1I', 'D7F', 'D3F_Y', math.pi / 2)
+	dim:set_limits('-0.05', '+0.05')
+	dim:set_level(3)
+	table.insert(self.the.dimensions, dim)
+
+	dim = adg.ADim.new_full_from_model(model, 'D4F', 'D4I', 'D5I', 'D4F', 'D4F')
+	dim:set_level(1.5)
+	dim:switch_extension2(false)
+	table.insert(self.the.dimensions, dim)
+
+	-- East dimensions
+
+	dim = adg.LDim.new_full_from_model(model, 'D6F', '-D6F', 'East', 0)
+	dim:set_limits('-0.1', nil)
+	dim:set_level(4)
+	dim:set_value('\226\140\128 <>')
+	table.insert(self.the.dimensions, dim)
+
+	dim = adg.LDim.new_full_from_model(model, 'D4F', '-D4F', 'East', 0)
+	dim:set_level(3)
+	dim:set_value('\226\140\128 <>')
+	table.insert(self.the.dimensions, dim)
+
+	dim = adg.LDim.new_full_from_model(model, 'D5F', '-D5F', 'East', 0)
+	dim:set_limits('-0.1', nil)
+	dim:set_level(2)
+	dim:set_value('\226\140\128 <>')
+	table.insert(self.the.dimensions, dim)
+
+	dim = adg.LDim.new_full_from_model(model, 'D7F', '-D7F', 'East', 0)
+	dim:set_value('\226\140\128 <>')
+	table.insert(self.the.dimensions, dim)
+
+	-- West dimensions
+
+	dim = adg.LDim.new_full_from_model(model, 'DHOLE', '-DHOLE', '-West', math.pi)
+	dim:set_value('\226\140\128 <>')
+	table.insert(self.the.dimensions, dim)
+
+	dim = adg.LDim.new_full_from_model(model, 'D1I', '-D1I', '-West', math.pi)
+	dim:set_limits('-0.05', '+0.05')
+	dim:set_level(2)
+	dim:set_value('\226\140\128 <>')
+	table.insert(self.the.dimensions, dim)
+
+	dim = adg.LDim.new_full_from_model(model, 'D3I_Y', '-D3I_Y', '-West', math.pi)
+	dim:set_limits('-0.25', nil)
+	dim:set_level(3)
+	dim:set_value('\226\140\128 <>')
+	table.insert(self.the.dimensions, dim)
+    end
+
+    return self.the.dimensions
+end
 
 
 ---------------------------------------- POPULATING THE CANVAS
 
 local canvas = adg.Canvas.new()
 canvas:set_paper('iso_a4', gtk.PAGE_ORIENTATION_LANDSCAPE)
-canvas:add(adg.Stroke.new(path))
-canvas:add(adg.Stroke.new(edges))
+canvas:add(adg.Stroke.new(part:model()))
+canvas:add(adg.Stroke.new(part:edges()))
 
+local n = 0
+for _, dim in pairs(part:dimensions()) do
+    canvas:add(dim)
+end
+
+local map = adg.Matrix.new()
 map.x0 = 140; map.y0 = 180
 map.xx = 8; map.yy = 8
 canvas:set_local_map(map)
