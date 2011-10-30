@@ -2,27 +2,31 @@
 
 require('lgob.adg')
 
+math.sqrt3 = math.sqrt(3)
+
 
 
 -- DEFINING THE MODEL
 
 local part = {
-    A    = 62.35,
-    B    = 20.6,
-    D1   = 9.3,
-    D2   = 7.5,
-    LD2  = 7,
-    D3   = 12.4,
-    LD3  = 3.5,
-    RD34 = 1,
-    D4   = 6.5,
-    D5   = 4.5,
-    LD5  = 4.5,
-    D6   = 7.2,
-    LD6  = 1,
-    C    = 2,
-    D7   = 2.5,
-    LD7  = 0.5,
+    A     = 62.35,
+    B     = 20.6,
+    D1    = 9.3,
+    D2    = 7.5,
+    LD2   = 7,
+    D3    = 12.4,
+    LD3   = 3.5,
+    RD34  = 1,
+    D4    = 6.5,
+    D5    = 4.5,
+    LD5   = 4.5,
+    D6    = 7.2,
+    LD6   = 1,
+    C     = 2,
+    D7    = 2.5,
+    LD7   = 0.5,
+    LHOLE = 12.5,
+    DHOLE = 3,
 
     cache = {}
 }
@@ -36,7 +40,7 @@ function part:model()
 	pair.x = 0
 	pair.y = self.D1 / 2
 	path:move_to(pair)
-	path:set_named_pair('D1I', pair);
+	path:set_named_pair('D1I', pair)
 
 	pair.x = self.A - self.B - self.LD2
 	path:line_to(pair)
@@ -145,7 +149,7 @@ function part:model()
 	path:set_named_pair('D6I_Y', tmp)
 
 	pair.x = self.A - self.LD7
-	pair.y = pair.y - (self.C - self.LD7 - self.LD6) / 1.732050808
+	pair.y = pair.y - (self.C - self.LD7 - self.LD6) / math.sqrt3
 	path:line_to(pair)
 	path:set_named_pair('D67', pair)
 
@@ -173,9 +177,45 @@ function part:edges()
     return self.cache.edges
 end
 
+function part:hole()
+    if not self.cache.hole then
+	local pair = adg.Pair.new()
+	local tmp = adg.Pair.new()
+	local path = adg.Path.new()
+
+	pair.x = self.LHOLE
+	pair.y = 0
+	path:move_to(pair)
+	path:set_named_pair('LHOLE', pair)
+
+	tmp.y = self.DHOLE / 2
+	tmp.x = pair.x - tmp.y / math.sqrt3
+	path:line_to(tmp)
+
+	pair.x = 0
+	pair.y = tmp.y
+	path:line_to(pair)
+	path:set_named_pair('DHOLE', pair)
+
+	path:line_to_explicit(0, (self.D1 + self.DHOLE) / 4)
+	path:curve_to_explicit(self.LHOLE / 2, self.DHOLE / 2, self.LHOLE + 2, self.D1 / 2, self.LHOLE + 2, 0)
+	path:reflect_explicit(1, 0)
+	path:close()
+
+	path:move_to(tmp)
+	tmp.y = -tmp.y
+	path:line_to(tmp)
+
+	self.cache.hole = path
+    end
+
+    return self.cache.hole
+end
+
 function part:dimensions()
     if not self.cache.dimensions then
 	local model = self:model()
+	local hole = self:hole()
 	local dims = {}
 	local dim
 
@@ -223,7 +263,8 @@ function part:dimensions()
 	dim:switch_extension2(false)
 	table.insert(dims, dim)
 
-	dim = adg.LDim.new_full_from_model(model, 'D1I', 'LHOLE', 'West', math.pi / 2)
+	dim = adg.LDim.new_full_from_model(model, 'D1I', nil, 'West', math.pi / 2)
+	dim:set_ref2_from_model(hole, '-LHOLE')
 	dim:switch_extension1(false)
 	table.insert(dims, dim)
 
@@ -285,7 +326,8 @@ function part:dimensions()
 
 	-- West
 
-	dim = adg.LDim.new_full_from_model(model, 'DHOLE', '-DHOLE', '-West', math.pi)
+	dim = adg.LDim.new_full_from_model(hole, 'DHOLE', '-DHOLE', nil, math.pi)
+	dim:set_pos_from_model(model, '-West')
 	dim:set_value('\226\140\128 <>')
 	table.insert(dims, dim)
 
@@ -314,11 +356,9 @@ local canvas = adg.Canvas.new()
 canvas:set_paper('iso_a4', gtk.PAGE_ORIENTATION_LANDSCAPE)
 canvas:add(adg.Stroke.new(part:model()))
 canvas:add(adg.Stroke.new(part:edges()))
-
-local n = 0
-for _, dim in pairs(part:dimensions()) do
-    canvas:add(dim)
-end
+canvas:add(adg.Hatch.new(part:hole()))
+canvas:add(adg.Stroke.new(part:hole()))
+for _, dim in pairs(part:dimensions()) do canvas:add(dim) end
 
 local map = adg.Matrix.new()
 map.x0 = 140; map.y0 = 180
