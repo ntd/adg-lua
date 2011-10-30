@@ -1,12 +1,10 @@
 #! /usr/bin/env lua
 
--- ADG example.
-
-
 require('lgob.adg')
 
 
----------------------------------------- PHYSICAL DATA
+
+-- DEFINING THE MODEL
 
 local part = {
     A    = 62.35,
@@ -26,12 +24,11 @@ local part = {
     D7   = 2.5,
     LD7  = 0.5,
 
-    -- Cached data
-    the  = {}
+    cache = {}
 }
 
 function part:model()
-    if not self.the.model then
+    if not self.cache.model then
 	local pair = adg.Pair.new()
 	local tmp = adg.Pair.new()
 	local path = adg.Path.new()
@@ -162,155 +159,156 @@ function part:model()
 	path:reflect_explicit(1, 0)
 	path:close()
 
-	self.the.model = path
+	self.cache.model = path
     end
 
-    return self.the.model
+    return self.cache.model
 end
 
 function part:edges()
-    if not self.the.edges then
-        self.the.edges = adg.Edges.new_with_source(self:model())
+    if not self.cache.edges then
+	self.cache.edges = adg.Edges.new_with_source(self:model())
     end
 
-    return self.the.edges
+    return self.cache.edges
 end
 
 function part:dimensions()
-    if not self.the.dimensions then
+    if not self.cache.dimensions then
 	local model = self:model()
+	local dims = {}
 	local dim
 
-	self.the.dimensions = {}
-
-	-- North dimensions
+	-- North
 
 	dim = adg.LDim.new_full_from_model(model, '-D3I_X', '-D3F_X', '-D3F_Y', -math.pi/2)
 	dim:set_outside(adg.THREE_STATE_OFF)
-	table.insert(self.the.dimensions, dim)
+	table.insert(dims, dim)
 
 	dim = adg.LDim.new_full_from_model(model, '-D6I_X', '-D67', '-East', -math.pi/2)
 	dim:set_level(0)
 	dim:switch_extension1(false)
-	table.insert(self.the.dimensions, dim)
+	table.insert(dims, dim)
 
 	dim = adg.LDim.new_full_from_model(model, '-D6I_X', '-D7F', '-East', -math.pi/2)
 	dim:set_limits('-0.06', nil)
-	table.insert(self.the.dimensions, dim)
+	table.insert(dims, dim)
 
 	dim = adg.ADim.new_full_from_model(model, '-D6I_Y', '-D6F', '-D6F', '-D67', '-D6F')
 	dim:set_level(2)
-	table.insert(self.the.dimensions, dim)
+	table.insert(dims, dim)
 
 	dim = adg.RDim.new_full_from_model(model, '-RD34', '-RD34_R', '-RD34_XY')
-	table.insert(self.the.dimensions, dim)
+	table.insert(dims, dim)
 
 	dim = adg.LDim.new_full_from_model(model, '-DGROOVEI_X', '-DGROOVEF_X', '-DGROOVEX_POS', -math.pi/2)
-	table.insert(self.the.dimensions, dim)
+	table.insert(dims, dim)
 
 	dim = adg.LDim.new_full_from_model(model, 'D2I', '-D2I', '-D2_POS', math.pi)
 	dim:set_limits('-0.1', nil)
 	dim:set_outside(adg.THREE_STATE_OFF)
 	dim:set_value('\226\140\128 <>')
-	table.insert(self.the.dimensions, dim)
+	table.insert(dims, dim)
 
 	dim = adg.LDim.new_full_from_model(model, 'DGROOVEI_Y', '-DGROOVEI_Y', '-DGROOVEY_POS', math.pi)
 	dim:set_limits('-0.1', nil)
 	dim:set_outside(adg.THREE_STATE_OFF)
 	dim:set_value('\226\140\128 <>')
-	table.insert(self.the.dimensions, dim)
+	table.insert(dims, dim)
 
-	-- South dimensions
+	-- South
 
 	dim = adg.ADim.new_full_from_model(model, 'D1F', 'D1I', 'D2I', 'D1F', 'D1F')
 	dim:set_level(2)
 	dim:switch_extension2(false)
-	table.insert(self.the.dimensions, dim)
+	table.insert(dims, dim)
 
 	dim = adg.LDim.new_full_from_model(model, 'D1I', 'LHOLE', 'West', math.pi / 2)
 	dim:switch_extension1(false)
-	table.insert(self.the.dimensions, dim)
+	table.insert(dims, dim)
 
 	dim = adg.LDim.new_full_from_model(model, 'D1I', 'DGROOVEI_X', 'West', math.pi / 2)
 	dim:switch_extension1(false)
 	dim:set_level(2)
-	table.insert(self.the.dimensions, dim)
+	table.insert(dims, dim)
 
 	dim = adg.LDim.new_full_from_model(model, 'D4F', 'D6I_X', 'D4_POS', math.pi / 2)
 	dim:set_limits(nil, '+0.2')
 	dim:set_outside(adg.THREE_STATE_OFF)
-	table.insert(self.the.dimensions, dim)
+	table.insert(dims, dim)
 
 	dim = adg.LDim.new_full_from_model(model, 'D1F', 'D3I_X', 'D2_POS', math.pi / 2)
 	dim:set_level(2)
 	dim:switch_extension2(false)
 	dim:set_outside(adg.THREE_STATE_OFF)
-	table.insert(self.the.dimensions, dim)
+	table.insert(dims, dim)
 
 	dim = adg.LDim.new_full_from_model(model, 'D3I_X', 'D7F', 'East', math.pi / 2)
 	dim:set_limits(nil, '+0.1')
 	dim:set_level(2)
 	dim:set_outside(adg.THREE_STATE_OFF)
 	dim:switch_extension2(false)
-	table.insert(self.the.dimensions, dim)
+	table.insert(dims, dim)
 
 	dim = adg.LDim.new_full_from_model(model, 'D1I', 'D7F', 'D3F_Y', math.pi / 2)
 	dim:set_limits('-0.05', '+0.05')
 	dim:set_level(3)
-	table.insert(self.the.dimensions, dim)
+	table.insert(dims, dim)
 
 	dim = adg.ADim.new_full_from_model(model, 'D4F', 'D4I', 'D5I', 'D4F', 'D4F')
 	dim:set_level(1.5)
 	dim:switch_extension2(false)
-	table.insert(self.the.dimensions, dim)
+	table.insert(dims, dim)
 
-	-- East dimensions
+	-- East
 
 	dim = adg.LDim.new_full_from_model(model, 'D6F', '-D6F', 'East', 0)
 	dim:set_limits('-0.1', nil)
 	dim:set_level(4)
 	dim:set_value('\226\140\128 <>')
-	table.insert(self.the.dimensions, dim)
+	table.insert(dims, dim)
 
 	dim = adg.LDim.new_full_from_model(model, 'D4F', '-D4F', 'East', 0)
 	dim:set_level(3)
 	dim:set_value('\226\140\128 <>')
-	table.insert(self.the.dimensions, dim)
+	table.insert(dims, dim)
 
 	dim = adg.LDim.new_full_from_model(model, 'D5F', '-D5F', 'East', 0)
 	dim:set_limits('-0.1', nil)
 	dim:set_level(2)
 	dim:set_value('\226\140\128 <>')
-	table.insert(self.the.dimensions, dim)
+	table.insert(dims, dim)
 
 	dim = adg.LDim.new_full_from_model(model, 'D7F', '-D7F', 'East', 0)
 	dim:set_value('\226\140\128 <>')
-	table.insert(self.the.dimensions, dim)
+	table.insert(dims, dim)
 
-	-- West dimensions
+	-- West
 
 	dim = adg.LDim.new_full_from_model(model, 'DHOLE', '-DHOLE', '-West', math.pi)
 	dim:set_value('\226\140\128 <>')
-	table.insert(self.the.dimensions, dim)
+	table.insert(dims, dim)
 
 	dim = adg.LDim.new_full_from_model(model, 'D1I', '-D1I', '-West', math.pi)
 	dim:set_limits('-0.05', '+0.05')
 	dim:set_level(2)
 	dim:set_value('\226\140\128 <>')
-	table.insert(self.the.dimensions, dim)
+	table.insert(dims, dim)
 
 	dim = adg.LDim.new_full_from_model(model, 'D3I_Y', '-D3I_Y', '-West', math.pi)
 	dim:set_limits('-0.25', nil)
 	dim:set_level(3)
 	dim:set_value('\226\140\128 <>')
-	table.insert(self.the.dimensions, dim)
+	table.insert(dims, dim)
+
+	self.cache.dimensions = dims
     end
 
-    return self.the.dimensions
+    return self.cache.dimensions
 end
 
 
----------------------------------------- POPULATING THE CANVAS
+-- POPULATING THE CANVAS
 
 local canvas = adg.Canvas.new()
 canvas:set_paper('iso_a4', gtk.PAGE_ORIENTATION_LANDSCAPE)
@@ -330,7 +328,8 @@ canvas:set_local_map(map)
 local scrolled_window = gtk.ScrolledWindow.new()
 scrolled_window:add(adg.GtkLayout.new_with_canvas(canvas))
 
----------------------------------------- THE RENDERING PROCESS
+
+-- THE RENDERING PROCESS
 
 local window = gtk.Window.new(gtk.WINDOW_TOPLEVEL)
 window:set_title('ADG demo')
@@ -339,5 +338,6 @@ window:connect('delete-event', gtk.main_quit)
 
 window:add(scrolled_window)
 window:show_all()
+
 
 gtk.main()
