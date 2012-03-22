@@ -6,5 +6,7 @@ builddir=@builddir@
 abs_builddir=@abs_builddir@
 abs_top_builddir=@abs_top_builddir@
 
-GENERATE=LUA_PATH="$(abs_builddir)/?.lua;$(abs_srcdir)/?.lua;$$LUA_PATH" $(LGOB_GENERATOR) -l "$(abs_builddir)/generator.log"
+GENERATE=LUA_PATH="$(LUA_LMODULEDIR)/?.lua;$(abs_builddir)/?.lua;$(abs_srcdir)/?.lua;$$LUA_PATH" $(LGOB_GENERATOR) -l "$(abs_builddir)/generator.log"
 PARSE=$(LGOB_PARSER) -l "$(abs_builddir)/parser.log"
+
+AM_CFLAGS=-i $(LUA_INCLUDEDIR)

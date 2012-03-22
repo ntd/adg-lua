@@ -22,4 +22,4 @@ $(abs_builddir)/iface.c: $(abs_srcdir)/adg.ovr $(abs_builddir)/api.lua
 	$(GENERATE) -i $< -o $@ -v $(API_VERSION)
 
 $(abs_builddir)/api.lua:
-	$(PARSE) -i Adg-1.0.gir -o $@
+	$(PARSE) -i $(GIRDIR)/Adg-1.0.gir -o $@

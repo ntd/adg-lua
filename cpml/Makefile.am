@@ -23,4 +23,4 @@ $(abs_builddir)/iface.c: $(abs_srcdir)/cpml.ovr $(abs_builddir)/api.lua
 	$(GENERATE) -i $< -o $@ -v $(API_VERSION)
 
 $(abs_builddir)/api.lua:
-	$(PARSE) -i Cpml-1.0.gir -o $@
+	$(PARSE) -i $(GIRDIR)/Cpml-1.0.gir -o $@

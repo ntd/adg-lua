@@ -5,6 +5,7 @@ m4_define([cpml_api_version],1.0)
 m4_define([adg_prereq],cpml_prereq)
 m4_define([adg_api_version],1.0)
 m4_define([lua_prereq],5.1.0)
+m4_define([gi_prereq],[0.9.5])dnl Same as ADG
 
 
 # Initialization
@@ -28,6 +29,7 @@ PKG_PROG_PKG_CONFIG
 AC_PATH_PROG([LGOB_PARSER],[lgob-gir-parser],[/usr/bin/lgob-gir-parser])
 AC_PATH_PROG([LGOB_GENERATOR],[lgob-generator],[/usr/bin/lgob-generator])
 
+
 # Libtool initialization
 
 AC_MSG_CHECKING([which libtool initialization strategy to adopt])
@@ -46,18 +48,33 @@ PKG_CHECK_MODULES([ADG],[adg-1 >= ]adg_prereq)
 PKG_CHECK_MODULES([LUA],[lua >= ]lua_prereq)
 
 
+# Check for required GObject introspection
+
+GOBJECT_INTROSPECTION_REQUIRE(gi_prereq)
+AC_ARG_WITH(girdir,
+            [AC_HELP_STRING([--with-girdir=DIR],
+                            [where the gir files are installed @<:@default=check@:>@])],
+            [],[with_girdir="${INTROSPECTION_GIRDIR}"])
+AC_SUBST([GIRDIR],${with_girdir})
+
+
 # Check for Lua/lgob dirs
- 
+
 AC_ARG_WITH(lua-includedir,
-	    [AS_HELP_STRING([--with-lua-includedir],
-			    [prefix where Lua headers are installed @<:@INSTALL_INC@:>@])],
-            lua_includedir="$withval", lua_includedir="$(${PKG_CONFIG} --variable=INSTALL_INC --define-variable=prefix='${prefix}' lua)")
-AC_SUBST([LUA_INCLUDEDIR],"$lua_includedir")
+            [AS_HELP_STRING([--with-lua-includedir],
+                            [prefix where Lua headers are installed @<:@default=check@:>@])],
+            [],[with_lua_includedir="$(${PKG_CONFIG} --variable=INSTALL_INC --define-variable=prefix='${prefix}' lua)"])
+AC_SUBST([LUA_INCLUDEDIR],"${with_lua_includedir}")
+AC_ARG_WITH(lua-lmoduledir,
+            [AS_HELP_STRING([--with-lua-lmoduledir],
+                            [prefix where Lua code is installed @<:@default=check@:>@])],
+            [],[with_lua_lmoduledir="$(${PKG_CONFIG} --variable=INSTALL_LMOD --define-variable=prefix='${prefix}' lua)"])
+AC_SUBST([LUA_LMODULEDIR],"${with_lua_lmoduledir}")
 AC_ARG_WITH(lua-cmoduledir,
-	    [AS_HELP_STRING([--with-lua-cmoduledir],
-			    [prefix where Lua C modules are installed @<:@INSTALL_CMOD@:>@])],
-            lua_cmoduledir="$withval", lua_cmoduledir="$(${PKG_CONFIG} --variable=INSTALL_CMOD --define-variable=prefix='${prefix}' lua)")
-AC_SUBST([LUA_CMODULEDIR],"$lua_cmoduledir")
+            [AS_HELP_STRING([--with-lua-cmoduledir],
+                            [prefix where Lua C modules are installed @<:@default=check@:>@])],
+            [],[with_lua_cmoduledir="$(${PKG_CONFIG} --variable=INSTALL_CMOD --define-variable=prefix='${prefix}' lua)"])
+AC_SUBST([LUA_CMODULEDIR],"${with_lua_cmoduledir}")
 
 
 # Substitutions
@@ -83,6 +100,8 @@ AC_PACKAGE_NAME adg_lua_version will be built with the following options:
 ----------------------------------------------------------
               CPML bindings version: cpml_api_version
                ADG bindings version: adg_api_version
-                Path to Lua headers: ${lua_includedir}
-              Path to Lua C modules: ${lua_cmoduledir}
+                Path to Lua headers: ${with_lua_includedir}
+            Path to Lua shared code: ${with_lua_lmoduledir}
+              Path to Lua C modules: ${with_lua_cmoduledir}
+                  Path to gir files: ${with_girdir}
 ])
