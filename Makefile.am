@@ -9,7 +9,8 @@ EXTRA_DIST=			COPYING \
 				NEWS \
 				README \
 				THANKS \
-				$(BUILT_SOURCES)
+				$(BUILT_SOURCES) \
+				build/configure-home
 
 SUBDIRS=			cpml \
 				adg \
