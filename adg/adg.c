@@ -24,7 +24,7 @@
 #include <lgob/common/types.h>
 
 
-static const struct luaL_reg _global[];
+static const struct luaL_reg _st__global[];
 static const struct luaL_reg adg[] = {
     { NULL, NULL }
 };
@@ -245,10 +245,10 @@ static void
 _wrap_adg_init(lua_State *L)
 {
     luaL_register(L, "adg", adg);
-    luaL_register(L, NULL, _global);
+    luaL_register(L, NULL, _st__global);
 
-    luaL_loadstring(L, "require 'lgob.cpml'\n"
-                       "require 'lgob.gtk'\n"
+    luaL_loadstring(L, "require('lgob.cpml')\n"
+                       "require('lgob.gtk')\n"
                        "adg.Object = gobject.Object\n"
                        "adg.InitiallyUnowned = gobject.Object\n");
     lua_call(L, 0, 0);
