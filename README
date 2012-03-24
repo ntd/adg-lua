@@ -1,0 +1,21 @@
+You need lgob installed and working to be able to use adg-lua.
+Check the project home page for details:
+
+http://oproj.tuxfamily.org/wiki/doku.php?id=lgob
+
+configure expects lgob to be installed in the system path. The
+locations can be overriden by specify them manually, tough:
+
+./configure \
+        --with-lua-includedir=<path to header files> \
+        --with-lua-lmoduledir=<path to lua modules> \
+        --with-lua-cmoduledir=<path to c libraries>
+
+A convenient wrapper to handle the common case where lgob is
+installed in $HOME/lua is provided in build/configure-home.
+
+Once all is working and built properly, examples/Adg.lua
+should show the same model of adg-demo, without the dialogs
+and data editing whistles.
+
+Have fun, if possible.
