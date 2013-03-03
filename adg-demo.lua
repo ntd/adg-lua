@@ -9,29 +9,10 @@ local Adg = lgi.require 'Adg'
 math.SQRT3 = math.sqrt(3)
 
 
--- ADG overrides
-
-local function boxed_wrapper(boxed, struct)
-    -- Merge struct methods, giving precence to the boxed ones
-    local method = rawget(boxed, '_method') or {}
-    boxed._method = struct._method
-    for k, v in pairs(method) do boxed._method[k] = v end
-
-    -- Set struct properties on the boxed
-    boxed._field = rawget(struct, '_field')
-    boxed._size = rawget(struct, '_size')
-end
-
-Adg.Primitive.put_point = function () end
-
-boxed_wrapper(Adg.Pair, Cpml.Pair)
-Adg.Matrix = cairo.Matrix
-
-
 -- DEFINING THE MODEL
 
 local part = {
-    A     = 62.35,
+    A     = 55,
     B     = 20.6,
     D1    = 9.3,
     D2    = 7.5,
@@ -56,8 +37,8 @@ local part = {
 function part:model()
     if self.cache.model then return self.cache.model end
 
-    local pair = Adg.Pair {}
-    local tmp = Adg.Pair {}
+    local pair = Cpml.Pair {}
+    local tmp = Cpml.Pair {}
     local path = Adg.Path {}
 
     pair.x = 0
@@ -200,8 +181,8 @@ end
 function part:hole()
     if self.cache.hole then return self.cache.hole end
 
-    local pair = Adg.Pair {}
-    local tmp = Adg.Pair {}
+    local pair = Cpml.Pair {}
+    local tmp = Cpml.Pair {}
     local path = Adg.Path {}
 
     pair.x = self.LHOLE
@@ -371,7 +352,7 @@ end
 -- POPULATING THE CANVAS
 
 local canvas = Adg.Canvas {
-    local_map = Adg.Matrix { xx = 10, yy = 10 }
+    local_map = cairo.Matrix { x0 = 150, y0 = 180, xx = 10, yy = 10 }
 }
 
 canvas:set_paper('iso_a4', Gtk.PageOrientation.LANDSCAPE)
@@ -389,10 +370,7 @@ local window = Gtk.Window {
     type = Gtk.WindowType.TOPLEVEL,
     window_position = Gtk.WindowPosition.CENTER,
     child = Gtk.ScrolledWindow {
-	child = Adg.GtkLayout {
-	    canvas = canvas,
-	    autozoom = true,
-	},
+	child = Adg.GtkLayout { canvas = canvas },
     },
     on_delete_event = Gtk.main_quit,
 }
