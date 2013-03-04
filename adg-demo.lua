@@ -351,9 +351,7 @@ end
 
 -- POPULATING THE CANVAS
 
-local canvas = Adg.Canvas {
-    local_map = cairo.Matrix { x0 = 150, y0 = 180, xx = 10, yy = 10 }
-}
+local canvas = Adg.Canvas {}
 
 canvas:set_paper('iso_a4', Gtk.PageOrientation.LANDSCAPE)
 canvas:add(Adg.Stroke { trail = part:model() })
@@ -375,6 +373,7 @@ local window = Gtk.Window {
     on_delete_event = Gtk.main_quit,
 }
 
+canvas:autoscale()
 window:show_all()
 Gtk.main()
 
