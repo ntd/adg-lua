@@ -351,7 +351,18 @@ end
 
 -- POPULATING THE CANVAS
 
-local canvas = Adg.Canvas {}
+local canvas = Adg.Canvas {
+    title_block = Adg.TitleBlock {
+	title = 'TITLE',
+	author = 'AUTHOR',
+	date = 'DATE',
+	drawing = 'DRAWING',
+	logo = Adg.Logo {},
+	projection = Adg.Projection { scheme = Adg.ProjectionScheme.FIRST_ANGLE },
+	scale = '---',
+	size = 'A4',
+    }
+}
 
 canvas:set_paper('iso_a4', Gtk.PageOrientation.LANDSCAPE)
 canvas:add(Adg.Stroke { trail = part:model() })
