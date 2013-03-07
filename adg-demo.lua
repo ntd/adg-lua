@@ -369,8 +369,7 @@ canvas:add(Adg.Stroke { trail = part:model() })
 canvas:add(Adg.Stroke { trail = part:edges() })
 canvas:add(Adg.Hatch { trail = part:hole() })
 canvas:add(Adg.Stroke { trail = part:hole() })
-
---for _, dim in pairs(part:dimensions()) do canvas:add(dim) end
+for _, dim in pairs(part:dimensions()) do canvas:add(dim) end
 
 
 -- THE RENDERING PROCESS
