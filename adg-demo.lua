@@ -11,39 +11,43 @@ math.SQRT3 = math.sqrt(3)
 
 -- DEFINING THE MODEL
 
-local part = {
-    A     = 55,
-    B     = 20.6,
-    D1    = 9.3,
-    D2    = 7.5,
-    LD2   = 7,
-    D3    = 12.4,
-    LD3   = 3.5,
-    RD34  = 1,
-    D4    = 6.5,
-    D5    = 4.5,
-    LD5   = 4.5,
-    D6    = 7.2,
-    LD6   = 1,
-    C     = 2,
-    D7    = 2.5,
-    LD7   = 0.5,
-    LHOLE = 12.5,
-    DHOLE = 3,
+local part  = {
+    A       = 55,
+    B       = 20.6,
+    C       = 2,
+    D1      = 9.3,
+    D2      = 6.5,
+    LD2     = 7,
+    D3      = 13.8,
+    LD3     = 3.5,
+    RD34    = 1,
+    D4      = 6.5,
+    D5      = 4.5,
+    LD5     = 5,
+    D6      = 7.2,
+    LD6     = 1,
+    RD6     = 25,
+    D7      = 2,
+    LD7     = 0.5,
+    DHOLE   = 2,
+    LHOLE   = 3,
+    DGROOVE = 8.3,
+    LGROOVE = 1,
+    ZGROOVE = 16,
 
-    cache = {}
+    cache   = {}
 }
 
 function part:model()
     if self.cache.model then return self.cache.model end
 
     local pair = Cpml.Pair {}
-    local tmp = Cpml.Pair {}
     local path = Adg.Path {}
 
     pair.x = 0
     pair.y = self.D1 / 2
     path:move_to(pair)
+    --path:fillet(0)
     path:set_named_pair('D1I', pair)
 
     pair.x = self.A - self.B - self.LD2
@@ -79,10 +83,10 @@ function part:model()
     path:line_to(pair)
 
     local primitive = path:over_primitive()
-    primitive:put_point(0, tmp)
+    local tmp = primitive:put_point(0)
     path:set_named_pair('D3I_X', tmp)
 
-    primitive:put_point(-1, tmp)
+    tmp = primitive:put_point(-1)
     path:set_named_pair('D3I_Y', tmp)
 
     path:chamfer(0.3, 0.3)
@@ -91,9 +95,9 @@ function part:model()
     path:line_to(pair)
 
     primitive = path:over_primitive()
-    primitive:put_point(0, tmp)
+    tmp = primitive:put_point(0)
     path:set_named_pair('D3F_Y', tmp)
-    primitive:put_point(-1, tmp)
+    tmp = primitive:put_point(-1)
     path:set_named_pair('D3F_X', tmp)
 
     path:fillet(self.RD34)
@@ -109,7 +113,7 @@ function part:model()
     path:set_named_pair('D4_POS', pair)
 
     primitive = path:over_primitive()
-    primitive:put_point(0, tmp)
+    tmp = primitive:put_point(0)
     tmp.x = tmp.x + self.RD34
     path:set_named_pair('RD34', tmp)
 
@@ -135,7 +139,7 @@ function part:model()
     path:line_to(pair)
 
     primitive = path:over_primitive()
-    primitive:put_point(0, tmp)
+    tmp = primitive:put_point(0)
     path:set_named_pair('D5F', tmp)
 
     path:fillet(0.1)
@@ -145,11 +149,11 @@ function part:model()
     path:set_named_pair('D6F', pair)
 
     primitive = path:over_primitive()
-    primitive:put_point(0, tmp)
+    tmp = primitive:put_point(0)
     path:set_named_pair('D6I_X', tmp)
 
     primitive = path:over_primitive()
-    primitive:put_point(-1, tmp)
+    tmp = primitive:put_point(-1)
     path:set_named_pair('D6I_Y', tmp)
 
     pair.x = self.A - self.LD7
