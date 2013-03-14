@@ -7,9 +7,11 @@ EXTRA_DIST=			COPYING \
 				INSTALL \
 				NEWS \
 				README \
-				THANKS
+				THANKS \
+				$(BUILT_SOURCES)
 
-bin_SCRIPTS=			adg-demo.lua
+dist_pkgdata_DATA=		demo.lua \
+				piston.lua
 
 
 # Creating ChangeLog files from git log:
@@ -21,7 +23,3 @@ ChangeLog:
 	  echo ' *WARN  A git checkout is required to generate $@' ; \
 	  touch $@ ; \
 	fi
-
-
-EXTRA_DIST+=			$(BUILT_SOURCES) \
-				$(bin_SCRIPTS)
