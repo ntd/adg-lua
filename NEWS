@@ -1,3 +1,16 @@
+ADG-Lua 0.1.0
+=============
+
+First release entirely based on LGI. LGI bindings provide two main
+benefits over LGob: they work out of the box with both ADG and CPML
+and they have more mainstream acceptance.
+
+The fact that LGI and ADG work together without further assistance
+makes this very same project useless, and in fact actually adg-lua
+does not provide Lua bindings for ADG, but includes a demonstration
+program that shows how to use ADG and LGI.
+
+
 ADG-Lua 0.0.1
 =============
 
