@@ -10,7 +10,7 @@ EXTRA_DIST=			COPYING \
 				THANKS \
 				$(BUILT_SOURCES)
 
-dist_pkgdata_DATA=		demo.lua \
+dist_pkgdata_DATA=		adg-demo.lua \
 				piston.lua
 
 
