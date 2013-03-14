@@ -1,6 +1,5 @@
-include $(top_srcdir)/build/Makefile.am.common
-
 ACLOCAL_AMFLAGS=		-I build
+
 
 BUILT_SOURCES=			ChangeLog
 
@@ -8,13 +7,9 @@ EXTRA_DIST=			COPYING \
 				INSTALL \
 				NEWS \
 				README \
-				THANKS \
-				$(BUILT_SOURCES) \
-				build/configure-home
+				THANKS
 
-SUBDIRS=			cpml \
-				adg \
-				examples
+bin_SCRIPTS=			adg-demo.lua
 
 
 # Creating ChangeLog files from git log:
@@ -26,3 +21,7 @@ ChangeLog:
 	  echo ' *WARN  A git checkout is required to generate $@' ; \
 	  touch $@ ; \
 	fi
+
+
+EXTRA_DIST+=			$(BUILT_SOURCES) \
+				$(bin_SCRIPTS)

@@ -1,9 +1,0 @@
-#! /bin/sh
-# A bare script to configure a typical home build.
-
-basedir="$(dirname $0)"
-
-$basedir/../configure \
-	--with-lua-includedir=$HOME/lua/include \
-	--with-lua-lmoduledir=$HOME/lua/share/lua/5.1 \
-	--with-lua-cmoduledir=$HOME/lua/lib/lua/5.1
