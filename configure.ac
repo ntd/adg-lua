@@ -36,7 +36,7 @@ PKG_PROG_PKG_CONFIG
 dnl Get adgdatadir: if not set, use a sensible default and check for
 dnl adg-demo.ui existence inside the guessed path.
 AC_ARG_WITH(adgdatadir,
-            [AS_HELP_STRING([--with-adg-data-dir=DIR],
+            [AS_HELP_STRING([--with-adgdatadir=DIR],
                             [path to the ADG package data @<:@default=DATAROOTDIR/adg@:>@])])
 AS_IF([test "x$with_adgdatadir" = "x"],
       [with_adgdatadir="$($PKG_CONFIG --variable=datadir adg-1)/adg"
