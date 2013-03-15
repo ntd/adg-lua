@@ -21,7 +21,7 @@ dir=`dirname $0`
 test -z "$dir" && dir=.
 
 step	"Checking for top-level adg-lua directory" \
-	"test -f '$dir/adg-demo.lua'"
+	"test -f '$dir/adg-demo.lua.in'"
 
 step	"Creating dummy ChangeLog, if needed" \
 	"test -f '$dir/ChangeLog' || touch '$dir/ChangeLog'"

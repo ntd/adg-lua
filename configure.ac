@@ -25,14 +25,30 @@ m4_ifdef([AM_COND_IF],[],
                    [AS_IF([test -z "$$1_TRUE"],[$2],[$3])])])
 
 
-# Check for required packages
+# Check for programs
 
 AX_PROG_LUA(adg_prereq)
+PKG_PROG_PKG_CONFIG
+
+
+# Check for required packages
+
+dnl Get adgdatadir: if not set, use a sensible default and check for
+dnl adg-demo.ui existence inside the guessed path.
+AC_ARG_WITH(adgdatadir,
+            [AS_HELP_STRING([--with-adg-data-dir=DIR],
+                            [path to the ADG package data @<:@default=DATAROOTDIR/adg@:>@])])
+AS_IF([test "x$with_adgdatadir" = "x"],
+      [with_adgdatadir="$($PKG_CONFIG --variable=datadir adg-1)/adg"
+       AS_IF([test -f "$with_adgdatadir/adg-demo.ui"],[:],
+             [AC_MSG_ERROR([adg-demo.ui missing in adgdatadir ($with_adgdatadir)])])])
+AC_SUBST([ADGDATADIR],${with_adgdatadir})
 
 
 # Generation
 
-AC_CONFIG_FILES([Makefile])
+AC_CONFIG_FILES([adg-demo.lua
+                 Makefile])
 AC_OUTPUT
 
 
@@ -42,6 +58,7 @@ AC_MSG_NOTICE([generating report
 
 AC_PACKAGE_NAME adg_lua_version will be built with the following options:
 ----------------------------------------------------------
-      Lua interpreter: ${LUA} (version ${LUA_VERSION})
-          LGI library: not checked
+          Lua interpreter: ${LUA} (version ${LUA_VERSION})
+              LGI library: not checked
+ Path to ADG package data: ${with_adgdatadir}
 ])
