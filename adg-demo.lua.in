@@ -33,6 +33,7 @@ if adg_data_dir == '@ADGDATADIR' .. '@' then
 end
 
 local lgi    = require 'lgi'
+local GLib   = lgi.require 'GLib'
 local Gtk    = lgi.require 'Gtk'
 local Adg    = lgi.require 'Adg'
 local Piston = require 'piston'
@@ -62,12 +63,21 @@ local piston = Piston.new {
     ZGROOVE = 16,
 }
 
-Adg.gtk_use_default_icons(adg_data_dir);
+Adg.gtk_use_default_icons(adg_data_dir)
+
 
 -- GtkBuilder initialization
 local builder = Gtk.Builder()
 builder:add_from_file(adg_data_dir .. '/adg-demo.ui')
 local ui = builder.objects
+
+
+-- Canvas settings
+local canvas = piston.view.detailed
+canvas:set_paper('iso_a4', Gtk.PageOrientation.LANDSCAPE)
+ui.mainCanvas:set_canvas(canvas)
+canvas:autoscale()
+
 
 -- About dialog
 ui.mainAbout.on_clicked = function ()
@@ -82,13 +92,50 @@ ui.mainAbout.on_clicked = function ()
     dialog.on_response = Gtk.Widget.hide
     dialog:run()
 end
+
+
+-- Save as dialog
+ui.mainSaveAs.on_clicked = function ()
+    local dialog = ui.wndSaveAs
+
+    -- Set the default destination file and directory
+    local dir = nil
+    if GLib.UserDirectory then
+	-- Issue: http://github.com/pavouk/lgi/issues/45
+	local dir_type = GLib.UserDirectory.DOCUMENTS or
+			 GLib.UserDirectory.DIRECTORY_DOCUMENTS
+	dir = GLib.get_user_special_dir(dir_type)
+    end
+    dir = dir or GLib.get_home_dir()
+    dialog:set_current_folder(dir)
+    dialog:set_current_name('adg-demo')
+
+    -- Response handling
+    dialog.on_response = function (dialog, response)
+	if response == Gtk.ResponseType.OK then
+	    -- Retrieve the file suffix (format type)
+	    local suffix
+	    for _, radio in pairs(ui.saveAsPng:get_group()) do
+		if radio:get_active() then
+		    suffix = radio:get_tooltip_markup()
+		    break
+		end
+	    end
+	    local file = dialog:get_filename()
+	    if not GLib.str_has_suffix(file, suffix) then
+		file = file .. suffix
+	    end
+	    canvas:export(file)
+	end
+	dialog:hide()
+    end
+
+    dialog:run()
+end
+
+-- Quit command
 ui.mainQuit.on_clicked = Gtk.main_quit
 
--- Canvas settings
-local canvas = piston.view.detailed
-canvas:set_paper('iso_a4', Gtk.PageOrientation.LANDSCAPE)
-ui.mainCanvas:set_canvas(canvas)
-canvas:autoscale()
 
 -- Main window
 local window = ui.wndMain

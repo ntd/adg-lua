@@ -25,6 +25,22 @@ local Adg   = lgi.require 'Adg'
 local SQRT3 = math.sqrt(3)
 
 
+-- Backward compatibility
+
+if not cairo.Status.to_string then
+    -- Pull request: http://github.com/pavouk/lgi/pull/44
+    local core = require 'lgi.core'
+    local ffi  = require 'lgi.ffi'
+    local ti   = ffi.types
+
+    cairo._enum.Status.to_string = core.callable.new {
+	addr = cairo._module.cairo_status_to_string,
+	ret = ti.utf8,
+	ti.int
+    }
+end
+
+
 -- MODEL
 -----------------------------------------------------------------
 
@@ -339,6 +355,51 @@ end
 
 local view = {}
 
+-- Inject the export method into Adg.Canvas
+rawset(Adg.Canvas, 'export', function (canvas, file)
+    -- The export format is guessed from the file suffix
+    local suffix = file:match('%..*$')
+    local size = canvas:get_size()
+    size.x = size.x + canvas:left_margin() + canvas:right_margin()
+    size.y = size.y + canvas:top_margin() + canvas:bottom_margin()
+
+    -- Create the cairo surface
+    local surface
+    if suffix == '.png' and cairo.ImageSurface then
+	surface = cairo.ImageSurface.create(cairo.Format.RGB24, size.x, size.y)
+    elseif suffix == '.svg' and cairo.SvgSurface then
+	surface = cairo.SvgSurface.create(file, size.x, size.y)
+    elseif suffix == '.pdf' and cairo.PdfSurface then
+	surface = cairo.PdfSurface.create(file, size.x, size.y)
+    elseif suffix == '.ps' and cairo.PsSurface then
+	-- Pull request: http://github.com/pavouk/lgi/pull/46
+	surface = cairo.PsSurface.create(file, size.x, size.y)
+	surface:dsc_comment('%%Title: adg-lua demonstration program')
+	surface:dsc_comment('%%Copyright: Copyleft (C) 2013  Fontana Nicola')
+	surface:dsc_comment('%%Orientation: Landscape')
+	surface:dsc_begin_setup()
+	surface:dsc_begin_page_setup()
+	surface:dsc_comment('%%IncludeFeature: *PageSize A4')
+    end
+    if not surface then return nil, 'Requested format not supported' end
+
+    -- Render the canvas content
+    local cr = cairo.Context.create(surface);
+    canvas:render(cr)
+    local status
+
+    if cairo.Surface.get_type(surface) == 'IMAGE' then
+	status = cairo.Surface.write_to_png(surface, file)
+    else
+	cr:show_page()
+	status = cr.status
+    end
+
+    if status ~= 'SUCCESS' then
+	return nil, cairo.Status.to_string(cairo.Status[status])
+    end
+end)
+
 function view.detailed(model)
     local canvas = Adg.Canvas {
 	title_block = Adg.TitleBlock {
@@ -350,7 +411,7 @@ function view.detailed(model)
 	    projection = Adg.Projection { scheme = Adg.ProjectionScheme.FIRST_ANGLE },
 	    scale = '---',
 	    size = 'A4',
-	}
+	},
     }
 
     canvas:add(Adg.Stroke { trail = model.body })
@@ -401,5 +462,6 @@ function controller.new(data)
 
     return part
 end
+
 
 return controller
