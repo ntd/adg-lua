@@ -360,8 +360,8 @@ rawset(Adg.Canvas, 'export', function (canvas, file)
     -- The export format is guessed from the file suffix
     local suffix = file:match('%..*$')
     local size = canvas:get_size()
-    size.x = size.x + canvas:left_margin() + canvas:right_margin()
-    size.y = size.y + canvas:top_margin() + canvas:bottom_margin()
+    size.x = size.x + canvas:get_left_margin() + canvas:get_right_margin()
+    size.y = size.y + canvas:get_top_margin() + canvas:get_bottom_margin()
 
     -- Create the cairo surface
     local surface
@@ -376,7 +376,7 @@ rawset(Adg.Canvas, 'export', function (canvas, file)
 	surface = cairo.PsSurface.create(file, size.x, size.y)
 	surface:dsc_comment('%%Title: adg-lua demonstration program')
 	surface:dsc_comment('%%Copyright: Copyleft (C) 2013  Fontana Nicola')
-	surface:dsc_comment('%%Orientation: Landscape')
+	surface:dsc_comment('%%Orientation: Portrait')
 	surface:dsc_begin_setup()
 	surface:dsc_begin_page_setup()
 	surface:dsc_comment('%%IncludeFeature: *PageSize A4')
