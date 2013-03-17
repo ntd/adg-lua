@@ -133,6 +133,52 @@ ui.mainSaveAs.on_clicked = function ()
     dialog:run()
 end
 
+
+-- Print dialog
+do
+local settings
+
+ui.mainPrint.on_clicked = function ()
+    local operation = Gtk.PrintOperation.new()
+
+    operation:set_use_full_page(operation, false)
+    operation:set_unit(Gtk.Unit.POINTS)
+
+    if settings then
+	operation:set_print_settings(settings)
+    end
+
+    if Gtk.PrintOperation.set_embed_page_setup then
+	operation:set_embed_page_setup(true)
+    end
+
+    local page_setup = canvas:get_page_setup()
+    if page_setup then
+        operation:set_default_page_setup(page_setup)
+    end
+
+    operation.on_begin_print = function ()
+	operation:set_n_pages(1)
+    end
+
+    operation.on_draw_page = function (operation, context)
+	local cr = context:get_cairo_context()
+
+	local old_map = canvas:get_global_map()
+	canvas:set_global_map(Adg.matrix_identity())
+	canvas:render(cr)
+	canvas:set_global_map(old_map)
+    end
+
+    local result, err = operation:run(Gtk.PrintOperationAction.PRINT_DIALOG, window)
+    if result == Gtk.PrintOperationResult.APPLY then
+        settings = operation:get_print_settings()
+    end
+end
+
+end
+
+
 -- Quit command
 ui.mainQuit.on_clicked = Gtk.main_quit
 
@@ -141,5 +187,6 @@ ui.mainQuit.on_clicked = Gtk.main_quit
 local window = ui.wndMain
 window.on_delete_event = Gtk.main_quit
 window:show_all()
+
 
 Gtk.main()
