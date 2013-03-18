@@ -48,13 +48,20 @@ end
 -----------------------------------------------------------------
 
 local model = {}
+local constructor = {}
 
-function model.body(piston)
-    local pair = Cpml.Pair {}
-    local path = Adg.Path {}
+-- Inject the regenerate method into Adg.Model
+rawset(Adg.Model, 'regenerate', function (model, part)
+    -- Call the original constructor of model, registered during the first call
+    -- of the same constructor, to regenerate it with the data stored in part.
+    constructor[model](part, model)
+end)
 
-    pair.x = 0
-    pair.y = piston.D1 / 2
+function model.body(piston, path)
+    path = path or Adg.Path {}
+    constructor[path] = model.body
+
+    local pair = Cpml.Pair { x = 0, y = piston.D1 / 2 }
     path:move_to(pair)
     path:set_named_pair('D1I', pair)
 
@@ -182,20 +189,23 @@ function model.body(piston)
     return path
 end
 
-function model.edges(piston)
-    return Adg.Edges { source = piston.model.body }
+function model.edges(piston, edges)
+    edges = edges or Adg.Edges {}
+    constructor[edges] = model.edges
+
+    edges:set_source(piston.model.body)
+    return edges
 end
 
-function model.hole(piston)
-    local pair = Cpml.Pair {}
-    local tmp = Cpml.Pair {}
-    local path = Adg.Path {}
+function model.hole(piston, path)
+    path = path or Adg.Path {}
+    constructor[path] = model.hole
 
-    pair.x = piston.LHOLE
-    pair.y = 0
+    local pair = Cpml.Pair {x = piston.LHOLE, y = 0 }
     path:move_to(pair)
     path:set_named_pair('LHOLE', pair)
 
+    local tmp = Cpml.Pair {}
     tmp.y = piston.DHOLE / 2
     tmp.x = pair.x - tmp.y / SQRT3
     path:line_to(tmp)

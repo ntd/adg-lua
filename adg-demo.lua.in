@@ -94,6 +94,86 @@ ui.mainAbout.on_clicked = function ()
 end
 
 
+-- Edit dialog
+
+local widgets = {
+    'A', 'B', 'C', 'DHOLE', 'LHOLE', 'GROOVE', 'ZGROOVE', 'DGROOVE', 'LGROOVE',
+    'D1', 'D2', 'LD2', 'D3', 'LD3', 'D4', 'D5', 'LD5', 'D6', 'LD6', 'D7',
+    'TITLE', 'DRAWING', 'AUTHOR', 'DATE',
+}
+
+for _, name in pairs(widgets) do
+    local widget = ui['edit' .. name]
+    if widget then
+	-- Synchronize GtkSpinButton to GtkAdjustment, that is
+	-- initialize the widget to its default value
+	if widget._name == 'Gtk.SpinButton' then
+	    local adj = widget:get_adjustment()
+	    adj:value_changed()
+	end
+
+	-- Unlock the UI on every widget change
+	local signal = widget._name == 'Gtk.ToggleButton' and 'toggled' or 'changed'
+	widget['on_' .. signal] = function ()
+	    ui.btnApply:set_sensitive(true)
+	    ui.btnReset:set_sensitive(true)
+	end
+	piston[name] = widget:get_value()
+    end
+end
+
+local function view_to_model()
+
+end
+
+ui.mainEdit.on_clicked = function ()
+    local dialog = ui.wndEdit
+    dialog:set_position(Gtk.WindowPosition.MOUSE);
+
+    local function lock_ui()
+	ui.btnApply:set_sensitive(false)
+	ui.btnReset:set_sensitive(false)
+    end
+
+    ui.btnApply.on_clicked = function ()
+	-- Update the piston data using the widgets
+	for _, name in pairs(widgets) do
+	    local widget = ui['edit' .. name]
+	    if widget then
+		piston[name] = widget:get_value()
+	    end
+	end
+
+	-- Regenerate all the models
+	for _, model in pairs(piston.model) do
+	    model:reset()
+	    model:regenerate(piston)
+	    model:changed()
+	end
+
+	-- Refresh the GTK+ interface
+	ui.mainCanvas:queue_draw()
+
+	lock_ui()
+    end
+
+    ui.btnReset.on_clicked = function ()
+	-- Update the widgets using the piston data
+	for _, name in pairs(widgets) do
+	    local widget = ui['edit' .. name]
+	    if widget then
+		widget:set_value(piston[name])
+	    end
+	end
+
+	lock_ui()
+    end
+
+    dialog.on_response = Adg.gtk_window_hide_here
+    dialog:run()
+end
+
+
 -- Save as dialog
 ui.mainSaveAs.on_clicked = function ()
     local dialog = ui.wndSaveAs
@@ -170,7 +250,7 @@ ui.mainPrint.on_clicked = function ()
 	canvas:set_global_map(old_map)
     end
 
-    local result, err = operation:run(Gtk.PrintOperationAction.PRINT_DIALOG, window)
+    local result, err = operation:run(Gtk.PrintOperationAction.PRINT_DIALOG, ui.wndMain)
     if result == Gtk.PrintOperationResult.APPLY then
         settings = operation:get_print_settings()
     end
