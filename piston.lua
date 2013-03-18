@@ -270,6 +270,19 @@ rawset(Adg.Canvas, 'export', function (canvas, file)
     end
 end)
 
+local function add_title_block(canvas, title)
+    canvas:set_title_block(Adg.TitleBlock {
+	title = title or 'Generic title',
+	author = 'adg-demo',
+	date = os.date('%d/%m/%Y'),
+	drawing = 'PISTON',
+	logo = Adg.Logo {},
+	projection = Adg.Projection { scheme = Adg.ProjectionScheme.FIRST_ANGLE },
+	scale = '---',
+	size = 'A4',
+    })
+end
+
 local function add_dimensions(canvas, model)
     local body = model.body
     local hole = model.hole
@@ -405,19 +418,9 @@ local function add_dimensions(canvas, model)
 end
 
 function view.detailed(model)
-    local canvas = Adg.Canvas {
-	title_block = Adg.TitleBlock {
-	    title = 'Detailed view',
-	    author = 'adg-demo.lua',
-	    date = os.date('%d/%m/%Y'),
-	    drawing = '',
-	    logo = Adg.Logo {},
-	    projection = Adg.Projection { scheme = Adg.ProjectionScheme.FIRST_ANGLE },
-	    scale = '---',
-	    size = 'A4',
-	},
-    }
+    local canvas = Adg.Canvas {}
 
+    add_title_block(canvas, 'Detailed view')
     canvas:add(Adg.Stroke { trail = model.body })
     canvas:add(Adg.Stroke { trail = model.edges })
     canvas:add(Adg.Hatch  { trail = model.hole })
