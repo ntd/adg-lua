@@ -219,139 +219,6 @@ function model.hole(piston)
     return path
 end
 
-function model.dimensions(piston)
-    local body = piston.model.body
-    local hole = piston.model.hole
-    local dims = {}
-    local dim
-
-    -- North
-
-    dim = Adg.LDim.new_full_from_model(body, '-D3I_X', '-D3F_X', '-D3F_Y', -math.pi/2)
-    dim:set_outside(Adg.ThreeState.OFF)
-    table.insert(dims, dim)
-
-    dim = Adg.LDim.new_full_from_model(body, '-D6I_X', '-D67', '-East', -math.pi/2)
-    dim:set_level(0)
-    dim:switch_extension1(false)
-    table.insert(dims, dim)
-
-    dim = Adg.LDim.new_full_from_model(body, '-D6I_X', '-D7F', '-East', -math.pi/2)
-    dim:set_limits('-0.06', nil)
-    table.insert(dims, dim)
-
-    dim = Adg.ADim.new_full_from_model(body, '-D6I_Y', '-D6F', '-D6F', '-D67', '-D6F')
-    dim:set_level(2)
-    table.insert(dims, dim)
-
-    dim = Adg.RDim.new_full_from_model(body, '-RD34', '-RD34_R', '-RD34_XY')
-    table.insert(dims, dim)
-
-    dim = Adg.LDim.new_full_from_model(body, '-DGROOVEI_X', '-DGROOVEF_X', '-DGROOVEX_POS', -math.pi/2)
-    table.insert(dims, dim)
-
-    dim = Adg.LDim.new_full_from_model(body, 'D2I', '-D2I', '-D2_POS', math.pi)
-    dim:set_limits('-0.1', nil)
-    dim:set_outside(Adg.ThreeState.OFF)
-    dim:set_value('\226\140\128 <>')
-    table.insert(dims, dim)
-
-    dim = Adg.LDim.new_full_from_model(body, 'DGROOVEI_Y', '-DGROOVEI_Y', '-DGROOVEY_POS', math.pi)
-    dim:set_limits('-0.1', nil)
-    dim:set_outside(Adg.ThreeState.OFF)
-    dim:set_value('\226\140\128 <>')
-    table.insert(dims, dim)
-
-    -- South
-
-    dim = Adg.ADim.new_full_from_model(body, 'D1F', 'D1I', 'D2I', 'D1F', 'D1F')
-    dim:set_level(2)
-    dim:switch_extension2(false)
-    table.insert(dims, dim)
-
-    dim = Adg.LDim.new_full_from_model(body, 'D1I', nil, 'West', math.pi / 2)
-    dim:set_ref2_from_model(hole, '-LHOLE')
-    dim:switch_extension1(false)
-    table.insert(dims, dim)
-
-    dim = Adg.LDim.new_full_from_model(body, 'D1I', 'DGROOVEI_X', 'West', math.pi / 2)
-    dim:switch_extension1(false)
-    dim:set_level(2)
-    table.insert(dims, dim)
-
-    dim = Adg.LDim.new_full_from_model(body, 'D4F', 'D6I_X', 'D4_POS', math.pi / 2)
-    dim:set_limits(nil, '+0.2')
-    dim:set_outside(Adg.ThreeState.OFF)
-    table.insert(dims, dim)
-
-    dim = Adg.LDim.new_full_from_model(body, 'D1F', 'D3I_X', 'D2_POS', math.pi / 2)
-    dim:set_level(2)
-    dim:switch_extension2(false)
-    dim:set_outside(Adg.ThreeState.OFF)
-    table.insert(dims, dim)
-
-    dim = Adg.LDim.new_full_from_model(body, 'D3I_X', 'D7F', 'East', math.pi / 2)
-    dim:set_limits(nil, '+0.1')
-    dim:set_level(2)
-    dim:set_outside(Adg.ThreeState.OFF)
-    dim:switch_extension2(false)
-    table.insert(dims, dim)
-
-    dim = Adg.LDim.new_full_from_model(body, 'D1I', 'D7F', 'D3F_Y', math.pi / 2)
-    dim:set_limits('-0.05', '+0.05')
-    dim:set_level(3)
-    table.insert(dims, dim)
-
-    dim = Adg.ADim.new_full_from_model(body, 'D4F', 'D4I', 'D5I', 'D4F', 'D4F')
-    dim:set_level(1.5)
-    dim:switch_extension2(false)
-    table.insert(dims, dim)
-
-    -- East
-
-    dim = Adg.LDim.new_full_from_model(body, 'D6F', '-D6F', 'East', 0)
-    dim:set_limits('-0.1', nil)
-    dim:set_level(4)
-    dim:set_value('\226\140\128 <>')
-    table.insert(dims, dim)
-
-    dim = Adg.LDim.new_full_from_model(body, 'D4F', '-D4F', 'East', 0)
-    dim:set_level(3)
-    dim:set_value('\226\140\128 <>')
-    table.insert(dims, dim)
-
-    dim = Adg.LDim.new_full_from_model(body, 'D5F', '-D5F', 'East', 0)
-    dim:set_limits('-0.1', nil)
-    dim:set_level(2)
-    dim:set_value('\226\140\128 <>')
-    table.insert(dims, dim)
-
-    dim = Adg.LDim.new_full_from_model(body, 'D7F', '-D7F', 'East', 0)
-    dim:set_value('\226\140\128 <>')
-    table.insert(dims, dim)
-
-    -- West
-
-    dim = Adg.LDim.new_full_from_model(hole, 'DHOLE', '-DHOLE', nil, math.pi)
-    dim:set_pos_from_model(body, '-West')
-    dim:set_value('\226\140\128 <>')
-    table.insert(dims, dim)
-
-    dim = Adg.LDim.new_full_from_model(body, 'D1I', '-D1I', '-West', math.pi)
-    dim:set_limits('-0.05', '+0.05')
-    dim:set_level(2)
-    dim:set_value('\226\140\128 <>')
-    table.insert(dims, dim)
-
-    dim = Adg.LDim.new_full_from_model(body, 'D3I_Y', '-D3I_Y', '-West', math.pi)
-    dim:set_limits('-0.25', nil)
-    dim:set_level(3)
-    dim:set_value('\226\140\128 <>')
-    table.insert(dims, dim)
-
-    return dims
-end
-
 
 -- VIEW
 -----------------------------------------------------------------
@@ -403,6 +270,140 @@ rawset(Adg.Canvas, 'export', function (canvas, file)
     end
 end)
 
+local function add_dimensions(canvas, model)
+    local body = model.body
+    local hole = model.hole
+    local dim
+
+
+    -- North
+
+    dim = Adg.LDim.new_full_from_model(body, '-D3I_X', '-D3F_X', '-D3F_Y', -math.pi/2)
+    dim:set_outside(Adg.ThreeState.OFF)
+    canvas:add(dim)
+
+    dim = Adg.LDim.new_full_from_model(body, '-D6I_X', '-D67', '-East', -math.pi/2)
+    dim:set_level(0)
+    dim:switch_extension1(false)
+    canvas:add(dim)
+
+    dim = Adg.LDim.new_full_from_model(body, '-D6I_X', '-D7F', '-East', -math.pi/2)
+    dim:set_limits('-0.06', nil)
+    canvas:add(dim)
+
+    dim = Adg.ADim.new_full_from_model(body, '-D6I_Y', '-D6F', '-D6F', '-D67', '-D6F')
+    dim:set_level(2)
+    canvas:add(dim)
+
+    dim = Adg.RDim.new_full_from_model(body, '-RD34', '-RD34_R', '-RD34_XY')
+    canvas:add(dim)
+
+    dim = Adg.LDim.new_full_from_model(body, '-DGROOVEI_X', '-DGROOVEF_X', '-DGROOVEX_POS', -math.pi/2)
+    canvas:add(dim)
+
+    dim = Adg.LDim.new_full_from_model(body, 'D2I', '-D2I', '-D2_POS', math.pi)
+    dim:set_limits('-0.1', nil)
+    dim:set_outside(Adg.ThreeState.OFF)
+    dim:set_value('\226\140\128 <>')
+    canvas:add(dim)
+
+    dim = Adg.LDim.new_full_from_model(body, 'DGROOVEI_Y', '-DGROOVEI_Y', '-DGROOVEY_POS', math.pi)
+    dim:set_limits('-0.1', nil)
+    dim:set_outside(Adg.ThreeState.OFF)
+    dim:set_value('\226\140\128 <>')
+    canvas:add(dim)
+
+
+    -- South
+
+    dim = Adg.ADim.new_full_from_model(body, 'D1F', 'D1I', 'D2I', 'D1F', 'D1F')
+    dim:set_level(2)
+    dim:switch_extension2(false)
+    canvas:add(dim)
+
+    dim = Adg.LDim.new_full_from_model(body, 'D1I', nil, 'West', math.pi / 2)
+    dim:set_ref2_from_model(hole, '-LHOLE')
+    dim:switch_extension1(false)
+    canvas:add(dim)
+
+    dim = Adg.LDim.new_full_from_model(body, 'D1I', 'DGROOVEI_X', 'West', math.pi / 2)
+    dim:switch_extension1(false)
+    dim:set_level(2)
+    canvas:add(dim)
+
+    dim = Adg.LDim.new_full_from_model(body, 'D4F', 'D6I_X', 'D4_POS', math.pi / 2)
+    dim:set_limits(nil, '+0.2')
+    dim:set_outside(Adg.ThreeState.OFF)
+    canvas:add(dim)
+
+    dim = Adg.LDim.new_full_from_model(body, 'D1F', 'D3I_X', 'D2_POS', math.pi / 2)
+    dim:set_level(2)
+    dim:switch_extension2(false)
+    dim:set_outside(Adg.ThreeState.OFF)
+    canvas:add(dim)
+
+    dim = Adg.LDim.new_full_from_model(body, 'D3I_X', 'D7F', 'East', math.pi / 2)
+    dim:set_limits(nil, '+0.1')
+    dim:set_level(2)
+    dim:set_outside(Adg.ThreeState.OFF)
+    dim:switch_extension2(false)
+    canvas:add(dim)
+
+    dim = Adg.LDim.new_full_from_model(body, 'D1I', 'D7F', 'D3F_Y', math.pi / 2)
+    dim:set_limits('-0.05', '+0.05')
+    dim:set_level(3)
+    canvas:add(dim)
+
+    dim = Adg.ADim.new_full_from_model(body, 'D4F', 'D4I', 'D5I', 'D4F', 'D4F')
+    dim:set_level(1.5)
+    dim:switch_extension2(false)
+    canvas:add(dim)
+
+
+    -- East
+
+    dim = Adg.LDim.new_full_from_model(body, 'D6F', '-D6F', 'East', 0)
+    dim:set_limits('-0.1', nil)
+    dim:set_level(4)
+    dim:set_value('\226\140\128 <>')
+    canvas:add(dim)
+
+    dim = Adg.LDim.new_full_from_model(body, 'D4F', '-D4F', 'East', 0)
+    dim:set_level(3)
+    dim:set_value('\226\140\128 <>')
+    canvas:add(dim)
+
+    dim = Adg.LDim.new_full_from_model(body, 'D5F', '-D5F', 'East', 0)
+    dim:set_limits('-0.1', nil)
+    dim:set_level(2)
+    dim:set_value('\226\140\128 <>')
+    canvas:add(dim)
+
+    dim = Adg.LDim.new_full_from_model(body, 'D7F', '-D7F', 'East', 0)
+    dim:set_value('\226\140\128 <>')
+    canvas:add(dim)
+
+
+    -- West
+
+    dim = Adg.LDim.new_full_from_model(hole, 'DHOLE', '-DHOLE', nil, math.pi)
+    dim:set_pos_from_model(body, '-West')
+    dim:set_value('\226\140\128 <>')
+    canvas:add(dim)
+
+    dim = Adg.LDim.new_full_from_model(body, 'D1I', '-D1I', '-West', math.pi)
+    dim:set_limits('-0.05', '+0.05')
+    dim:set_level(2)
+    dim:set_value('\226\140\128 <>')
+    canvas:add(dim)
+
+    dim = Adg.LDim.new_full_from_model(body, 'D3I_Y', '-D3I_Y', '-West', math.pi)
+    dim:set_limits('-0.25', nil)
+    dim:set_level(3)
+    dim:set_value('\226\140\128 <>')
+    canvas:add(dim)
+end
+
 function view.detailed(model)
     local canvas = Adg.Canvas {
 	title_block = Adg.TitleBlock {
@@ -421,7 +422,7 @@ function view.detailed(model)
     canvas:add(Adg.Stroke { trail = model.edges })
     canvas:add(Adg.Hatch  { trail = model.hole })
     canvas:add(Adg.Stroke { trail = model.hole })
-    for _, dim in pairs(model.dimensions) do canvas:add(dim) end
+    add_dimensions(canvas, model)
 
     return canvas
 end
