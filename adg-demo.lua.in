@@ -79,6 +79,14 @@ ui.mainCanvas:set_canvas(canvas)
 canvas:autoscale()
 
 
+-- Help dialog
+ui.mainHelp.on_clicked = function ()
+    local dialog = ui.wndHelp
+    dialog.on_response = Gtk.Widget.hide
+    dialog:run()
+end
+
+
 -- About dialog
 ui.mainAbout.on_clicked = function ()
     local dialog = ui.wndAbout
