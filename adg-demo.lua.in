@@ -113,13 +113,13 @@ local widgets = {
 local function entry_info(widget)
     if Gtk.ToggleButton:is_type_of(widget) then
 	-- Boolean value
-	return 'get_active', 'on_toggled'
+	return 'get_active', 'set_active', 'on_toggled'
     elseif Gtk.Entry:is_type_of(widget) then
 	-- String value
-	return 'get_text', 'on_changed'
+	return 'get_text', 'set_text', 'on_changed'
     elseif Gtk.SpinButton:is_type_of(widget) then
 	-- Number value
-	return 'get_value', 'on_changed'
+	return 'get_value', 'set_value', 'on_changed'
     else
 	-- Unhandled type
 	return
@@ -137,12 +137,12 @@ for _, name in pairs(widgets) do
 	end
 
 	-- Unlock the UI on every widget change
-	local get_value, on_change = entry_info(widget)
-	widget[on_change] = function ()
+	local getter, _, notification = entry_info(widget)
+	widget[notification] = function ()
 	    ui.btnApply:set_sensitive(true)
 	    ui.btnReset:set_sensitive(true)
 	end
-	piston[name] = widget[get_value](widget)
+	piston[name] = widget[getter](widget)
     end
 end
 
@@ -186,8 +186,9 @@ ui.mainEdit.on_clicked = function ()
 	-- Update the widgets using the piston data
 	for _, name in pairs(widgets) do
 	    local widget = ui['edit' .. name]
-	    if widget then
-		widget:set_value(piston[name])
+	    local _, setter = entry_info(widget)
+	    if setter then
+		widget[setter](widget, piston[name])
 	    end
 	end
 
