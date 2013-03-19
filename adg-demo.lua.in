@@ -102,23 +102,39 @@ local widgets = {
     'TITLE', 'DRAWING', 'AUTHOR', 'DATE',
 }
 
+local function entry_info(widget)
+    if Gtk.ToggleButton:is_type_of(widget) then
+	-- Boolean value
+	return 'get_active', 'on_toggled'
+    elseif Gtk.Entry:is_type_of(widget) then
+	-- String value
+	return 'get_text', 'on_changed'
+    elseif Gtk.SpinButton:is_type_of(widget) then
+	-- Number value
+	return 'get_value', 'on_changed'
+    else
+	-- Unhandled type
+	return
+    end
+end
+
 for _, name in pairs(widgets) do
     local widget = ui['edit' .. name]
     if widget then
 	-- Synchronize GtkSpinButton to GtkAdjustment, that is
 	-- initialize the widget to its default value
-	if widget._name == 'Gtk.SpinButton' then
+	if Gtk.SpinButton:is_type_of(widget) then
 	    local adj = widget:get_adjustment()
 	    adj:value_changed()
 	end
 
 	-- Unlock the UI on every widget change
-	local signal = widget._name == 'Gtk.ToggleButton' and 'toggled' or 'changed'
-	widget['on_' .. signal] = function ()
+	local get_value, on_change = entry_info(widget)
+	widget[on_change] = function ()
 	    ui.btnApply:set_sensitive(true)
 	    ui.btnReset:set_sensitive(true)
 	end
-	piston[name] = widget:get_value()
+	piston[name] = widget[get_value](widget)
     end
 end
 
@@ -139,8 +155,9 @@ ui.mainEdit.on_clicked = function ()
 	-- Update the piston data using the widgets
 	for _, name in pairs(widgets) do
 	    local widget = ui['edit' .. name]
-	    if widget then
-		piston[name] = widget:get_value()
+	    local getter = entry_info(widget)
+	    if getter then
+		piston[name] = widget[getter](widget)
 	    end
 	end
 
