@@ -52,9 +52,16 @@ generator.model = {}
 local constructor = {}
 
 -- Inject the regenerate method into Adg.Model
+--
+-- Rebuilding the model *without* destroying it is the quickest method
+-- to change a drawing: the notification mechanism will change only the
+-- entities that effectively need to be modified.
+--
+-- Another (easier) option would be to regenerate everything - that is
+-- models and views - from scratch.
 rawset(Adg.Model, 'regenerate', function (model, part)
     -- Call the original constructor of model, registered during the first call
-    -- of the same constructor, to regenerate it with the data stored in part.
+    -- to the same constructor, to regenerate it with the data stored in part.
     constructor[model](part, model)
 end)
 
