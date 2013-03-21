@@ -71,12 +71,14 @@ Adg.gtk_use_default_icons(adg_data_dir)
 
 
 -- GtkBuilder initialization
+
 local builder = Gtk.Builder()
 builder:add_from_file(adg_data_dir .. '/adg-demo.ui')
 local ui = builder.objects
 
 
 -- Canvas settings
+
 local canvas = piston.view.detailed
 canvas:set_paper('iso_a4', Gtk.PageOrientation.LANDSCAPE)
 ui.mainCanvas:set_canvas(canvas)
@@ -84,6 +86,7 @@ canvas:autoscale()
 
 
 -- Help dialog
+
 ui.mainHelp.on_clicked = function ()
     local dialog = ui.wndHelp
     dialog.on_response = Gtk.Widget.hide
@@ -92,6 +95,7 @@ end
 
 
 -- About dialog
+
 ui.mainAbout.on_clicked = function ()
     local dialog = ui.wndAbout
     local icon_list = Gtk.Window.get_default_icon_list()
@@ -199,6 +203,7 @@ end
 
 
 -- Save as dialog
+
 ui.mainSaveAs.on_clicked = function ()
     local dialog = ui.wndSaveAs
 
@@ -239,6 +244,7 @@ end
 
 
 -- Print dialog
+
 do
 local settings
 
@@ -284,10 +290,12 @@ end
 
 
 -- Quit command
+
 ui.mainQuit.on_clicked = Gtk.main_quit
 
 
 -- Main window
+
 local window = ui.wndMain
 window.on_delete_event = Gtk.main_quit
 window:show_all()
