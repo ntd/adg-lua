@@ -61,6 +61,10 @@ local piston = Piston.new {
     DGROOVE = 8.3,
     LGROOVE = 1,
     ZGROOVE = 16,
+    TITLE   = 'SAMPLE DRAWING',
+    DRAWING = 'PISTON',
+    AUTHOR  = 'adg-demo',
+    DATE    = os.date('%d/%m/%Y'),
 }
 
 Adg.gtk_use_default_icons(adg_data_dir)
@@ -104,12 +108,6 @@ end
 
 -- Edit dialog
 
-local widgets = {
-    'A', 'B', 'C', 'DHOLE', 'LHOLE', 'GROOVE', 'ZGROOVE', 'DGROOVE', 'LGROOVE',
-    'D1', 'D2', 'LD2', 'D3', 'LD3', 'D4', 'D5', 'LD5', 'D6', 'LD6', 'D7',
-    'TITLE', 'DRAWING', 'AUTHOR', 'DATE',
-}
-
 local function entry_info(widget)
     if Gtk.ToggleButton:is_type_of(widget) then
 	-- Boolean value
@@ -126,8 +124,8 @@ local function entry_info(widget)
     end
 end
 
-for _, name in pairs(widgets) do
-    local widget = ui['edit' .. name]
+for field in pairs(piston.data) do
+    local widget = ui['edit' .. field]
     if widget then
 	-- Synchronize GtkSpinButton to GtkAdjustment, that is
 	-- initialize the widget to its default value
@@ -142,7 +140,7 @@ for _, name in pairs(widgets) do
 	    ui.btnApply:set_sensitive(true)
 	    ui.btnReset:set_sensitive(true)
 	end
-	piston[name] = widget[getter](widget)
+	piston.data[field] = widget[getter](widget)
     end
 end
 
@@ -160,12 +158,12 @@ ui.mainEdit.on_clicked = function ()
     end
 
     ui.btnApply.on_clicked = function ()
-	-- Update the piston data using the widgets
-	for _, name in pairs(widgets) do
-	    local widget = ui['edit' .. name]
+	-- Refresh the piston data using the widgets
+	for field in pairs(piston.data) do
+	    local widget = ui['edit' .. field]
 	    local getter = entry_info(widget)
 	    if getter then
-		piston[name] = widget[getter](widget)
+		piston.data[field] = widget[getter](widget)
 	    end
 	end
 
@@ -184,11 +182,11 @@ ui.mainEdit.on_clicked = function ()
 
     ui.btnReset.on_clicked = function ()
 	-- Update the widgets using the piston data
-	for _, name in pairs(widgets) do
-	    local widget = ui['edit' .. name]
+	for field, value in pairs(piston.data) do
+	    local widget = ui['edit' .. field]
 	    local _, setter = entry_info(widget)
 	    if setter then
-		widget[setter](widget, piston[name])
+		widget[setter](widget, value)
 	    end
 	end
 
