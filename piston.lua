@@ -40,7 +40,7 @@ if not cairo.Status.to_string then
     cairo._enum.Status.to_string = core.callable.new {
 	addr = cairo._module.cairo_status_to_string,
 	ret = ti.utf8,
-	ti.int
+	cairo.Status
     }
 end
 
