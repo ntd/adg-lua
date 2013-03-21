@@ -26,6 +26,7 @@ local Cpml  = lgi.require 'Cpml'
 local Adg   = lgi.require 'Adg'
 
 local SQRT3 = math.sqrt(3)
+local generator = {}
 
 
 -- Backward compatibility
@@ -47,7 +48,7 @@ end
 -- MODEL
 -----------------------------------------------------------------
 
-local model = {}
+generator.model = {}
 local constructor = {}
 
 -- Inject the regenerate method into Adg.Model
@@ -57,9 +58,9 @@ rawset(Adg.Model, 'regenerate', function (model, part)
     constructor[model](part, model)
 end)
 
-function model.body(part, path)
+function generator.model.body(part, path)
     path = path or Adg.Path {}
-    constructor[path] = model.body
+    constructor[path] = generator.model.body
 
     local data = part.data
 
@@ -191,17 +192,17 @@ function model.body(part, path)
     return path
 end
 
-function model.edges(part, edges)
+function generator.model.edges(part, edges)
     edges = edges or Adg.Edges {}
-    constructor[edges] = model.edges
+    constructor[edges] = generator.model.edges
 
     edges:set_source(part.model.body)
     return edges
 end
 
-function model.hole(part, path)
+function generator.model.hole(part, path)
     path = path or Adg.Path {}
-    constructor[path] = model.hole
+    constructor[path] = generator.model.hole
 
     local data = part.data
 
@@ -237,7 +238,7 @@ end
 -- VIEW
 -----------------------------------------------------------------
 
-local view = {}
+generator.view = {}
 
 -- Inject the export method into Adg.Canvas
 rawset(Adg.Canvas, 'export', function (canvas, file)
@@ -432,7 +433,7 @@ local function add_dimensions(canvas, model)
     canvas:add(dim)
 end
 
-function view.detailed(part)
+function generator.view.detailed(part)
     local canvas = Adg.Canvas {}
     local model = part.model
 
@@ -455,6 +456,13 @@ local controller = {}
 function controller.new(data)
     local part = {}
 
+    local function generate(class, method)
+	local constructor = generator[class][method]
+	local result = constructor and constructor(part) or false
+	part[class][method] = result
+	return result
+    end
+
     -- data: numbers and strings needed to define the whole part
     part.data = data or {}
 
@@ -462,14 +470,7 @@ function controller.new(data)
     part.model = {}
     setmetatable(part.model, {
 	__index = function (self, key)
-	    -- Check if the model name is valid
-	    if not model[key] then return end
-
-	    -- Create the model and store it into the cache
-	    self[key] = model[key](part)
-
-	    -- Return the cached result
-	    return self[key]
+	    return generate('model', key)
 	end
     })
 
@@ -477,14 +478,7 @@ function controller.new(data)
     part.view = {}
     setmetatable(part.view, {
 	__index = function (self, key)
-	    -- Check if the view name is valid
-	    if not view[key] then return end
-
-	    -- Create the view and store it into the cache
-	    self[key] = view[key](part)
-
-	    -- Return the cached result
-	    return self[key]
+	    return generate('view', key)
 	end
     })
 
