@@ -65,6 +65,41 @@ rawset(Adg.Model, 'regenerate', function (model, part)
     constructor[model](part, model)
 end)
 
+function generator.model.hole(part, path)
+    path = path or Adg.Path {}
+    constructor[path] = generator.model.hole
+
+    local data = part.data
+
+    local pair = Cpml.Pair { x = data.LHOLE, y = 0 }
+    path:move_to(pair)
+    path:set_named_pair('LHOLE', pair)
+
+    pair.y = data.DHOLE / 2
+    pair.x = pair.x - pair.y / SQRT3
+    path:line_to(pair)
+    local edge = pair:dup()
+
+    pair.x = 0
+    path:line_to(pair)
+    path:set_named_pair('DHOLE', pair)
+
+    path:line_to_explicit(0, (data.D1 + data.DHOLE) / 4)
+    path:curve_to_explicit(data.LHOLE / 2, data.DHOLE / 2,
+			   data.LHOLE + 2, data.D1 / 2,
+			   data.LHOLE + 2, 0)
+    path:reflect()
+    path:close()
+
+    -- No need to incomodate an AdgEdge model for two reasons:
+    -- it is only a single line and it is always needed
+    path:move_to(edge)
+    edge.y = -edge.y
+    path:line_to(edge)
+
+    return path
+end
+
 function generator.model.body(part, path)
     path = path or Adg.Path {}
     constructor[path] = generator.model.body
@@ -204,39 +239,24 @@ function generator.model.edges(part, edges)
     constructor[edges] = generator.model.edges
 
     edges:set_source(part.model.body)
+
     return edges
 end
 
-function generator.model.hole(part, path)
+function generator.model.axis(part, path)
+    --[[
+	XXX: actually the end points can extend outside the body
+	only in local space. The proper extension values should be
+	expressed in global space but actually is impossible to
+	combine local and global space in the AdgPath API.
+    --]]
     path = path or Adg.Path {}
-    constructor[path] = generator.model.hole
+    constructor[path] = generator.model.axis
 
     local data = part.data
 
-    local pair = Cpml.Pair {x = data.LHOLE, y = 0 }
-    path:move_to(pair)
-    path:set_named_pair('LHOLE', pair)
-
-    local tmp = Cpml.Pair {}
-    tmp.y = data.DHOLE / 2
-    tmp.x = pair.x - tmp.y / SQRT3
-    path:line_to(tmp)
-
-    pair.x = 0
-    pair.y = tmp.y
-    path:line_to(pair)
-    path:set_named_pair('DHOLE', pair)
-
-    path:line_to_explicit(0, (data.D1 + data.DHOLE) / 4)
-    path:curve_to_explicit(data.LHOLE / 2, data.DHOLE / 2,
-			   data.LHOLE + 2, data.D1 / 2,
-			   data.LHOLE + 2, 0)
-    path:reflect_explicit(1, 0)
-    path:close()
-
-    path:move_to(tmp)
-    tmp.y = -tmp.y
-    path:line_to(tmp)
+    path:move_to_explicit(-1, 0)
+    path:line_to_explicit(data.A + 1, 0)
 
     return path
 end
@@ -276,7 +296,7 @@ rawset(Adg.Canvas, 'export', function (canvas, file)
     if not surface then return nil, 'Requested format not supported' end
 
     -- Render the canvas content
-    local cr = cairo.Context.create(surface);
+    local cr = cairo.Context.create(surface)
     canvas:render(cr)
     local status
 
@@ -449,6 +469,10 @@ function generator.view.detailed(part)
     canvas:add(Adg.Stroke { trail = model.edges })
     canvas:add(Adg.Hatch  { trail = model.hole })
     canvas:add(Adg.Stroke { trail = model.hole })
+    canvas:add(Adg.Stroke {
+	trail = model.axis,
+	line_dress = Adg.Dress.LINE_AXIS
+    })
     add_dimensions(canvas, model)
 
     return canvas
