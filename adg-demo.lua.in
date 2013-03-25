@@ -41,6 +41,29 @@ local Adg    = lgi.require 'Adg'
 local Piston = require 'piston'
 
 
+-- Command line parsing
+
+if arg[1] == '--version' or arg[1] == '-V' then
+    print('adg-demo @VERSION@')
+    return 0
+elseif arg[1] == '--help' or arg[1] == '-h' then
+    print([[
+Usage:
+  ]] .. arg[0] .. [[ [OPTION...] - ADG demonstration program
+
+  -h, --help               Show help options
+  -V, --version            Display version information
+  -E, --show-extents       Show the boundary boxes of every entity
+]])
+    return 0
+elseif arg[1] == '--show-extents' or arg[1] == '-E' then
+    Adg.switch_extents(true)
+elseif arg[1] then
+    error('Invalid argument (' .. arg[1] .. ')')
+    return 1
+end
+
+
 -- User interface initialization
 
 Adg.gtk_use_default_icons(adg_data_dir)
