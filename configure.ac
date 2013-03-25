@@ -1,4 +1,4 @@
-m4_define([adg_lua_version],[0.1.0])
+m4_define([adg_lua_version],[0.1.1])
 
 m4_define([lua_prereq],5.1.0)
 m4_define([adg_prereq],0.7.2)
