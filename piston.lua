@@ -339,17 +339,15 @@ rawset(Adg.Canvas, 'export', function (canvas, file)
     end
 end)
 
-local function add_title_block(canvas, part)
-    local data = part.data
-
+local function add_title_block(canvas)
     canvas:set_title_block(Adg.TitleBlock {
-	title = data.TITLE,
-	author = data.AUTHOR,
-	date = data.DATE,
-	drawing = data.DRAWING,
-	logo = Adg.Logo {},
+	title      = '',
+	author     = '',
+	date       = '',
+	drawing    = '',
+	logo       = Adg.Logo {},
 	projection = Adg.Projection { scheme = Adg.ProjectionScheme.FIRST_ANGLE },
-	size = 'A4',
+	size       = 'A4',
     })
 end
 
@@ -491,7 +489,7 @@ function generator.view.detailed(part)
     local canvas = Adg.Canvas {}
     local model = part.model
 
-    add_title_block(canvas, part)
+    add_title_block(canvas)
     canvas:add(Adg.Stroke { trail = model.body })
     canvas:add(Adg.Stroke { trail = model.edges })
     canvas:add(Adg.Hatch  { trail = model.hole })

@@ -198,8 +198,6 @@ local function update_title_block()
     end
 end
 
-update_title_block()
-
 ui.editGROOVE.on_toggled = function (self)
     local toggled = self:get_active()
     ui.editZGROOVE:set_sensitive(toggled)
@@ -229,6 +227,8 @@ for field in pairs(piston.data) do
 	piston.data[field] = widget[getter](widget)
     end
 end
+
+update_title_block()
 
 ui.mainEdit.on_clicked = function ()
     local dialog = ui.wndEdit
