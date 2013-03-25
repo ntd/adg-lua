@@ -109,6 +109,7 @@ local piston = Piston.new {
     ZGROOVE = 16,
     DGROOVE = 8.3,
     LGROOVE = 1,
+    CHAMFER = 0.3,
 
     -- Metadata
     TITLE   = 'SAMPLE DRAWING',

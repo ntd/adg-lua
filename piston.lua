@@ -136,7 +136,7 @@ function generator.model.body(part, path)
     pair.x = 0
     path:set_named_pair('West', pair)
 
-    path:chamfer(0.3, 0.3)
+    path:chamfer(data.CHAMFER, data.CHAMFER)
 
     pair.x = data.A - data.B + data.LD3
     pair.y = data.D3 / 2
@@ -149,7 +149,7 @@ function generator.model.body(part, path)
     tmp = primitive:put_point(-1)
     path:set_named_pair('D3I_Y', tmp)
 
-    path:chamfer(0.3, 0.3)
+    path:chamfer(data.CHAMFER, data.CHAMFER)
 
     pair.y = data.D4 / 2
     path:line_to(pair)
