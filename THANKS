@@ -1,0 +1,14 @@
+Lucas Hermann Negri <lucashnegri@gmail.com>
+
+    Although he does not know, his works [0] have convinced me
+    to use Lua as testbed for bindings.
+
+
+Pavel Holejsovsky <pavel.holejsovsky@gmail.com>
+
+    Actually adg-lua is heavily based on the bindings generated
+    dynamically by his LGI [1] project.
+
+
+[0] http://oproj.tuxfamily.org/
+[1] http://github.com/pavouk/lgi
