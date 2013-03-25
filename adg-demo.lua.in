@@ -73,6 +73,20 @@ local piston = Piston.new {
 Adg.gtk_use_default_icons(adg_data_dir)
 
 
+-- Customize error handler
+
+error = function (message)
+    local dialog = Gtk.MessageDialog {
+	dialog_flags = Gtk.DialogFlags.DESTROY_WITH_PARENT,
+	message_type = Gtk.MessageType.ERROR,
+	buttons = Gtk.Buttons.CLOSE,
+	text = message,
+	title = 'Error from adg-demo',
+    }
+    dialog:run()
+end
+
+
 -- GtkBuilder initialization
 
 local builder = Gtk.Builder()
@@ -237,7 +251,8 @@ ui.mainSaveAs.on_clicked = function ()
 	    if not GLib.str_has_suffix(file, suffix) then
 		file = file .. suffix
 	    end
-	    canvas:export(file)
+	    _, err = canvas:export(file)
+	    if err then error(err) end
 	end
 	dialog:hide()
     end
@@ -286,6 +301,8 @@ ui.mainPrint.on_clicked = function ()
     local result, err = operation:run(Gtk.PrintOperationAction.PRINT_DIALOG, ui.wndMain)
     if result == Gtk.PrintOperationResult.APPLY then
         settings = operation:get_print_settings()
+    elseif err then
+	error(err)
     end
 end
 
