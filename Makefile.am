@@ -10,8 +10,7 @@ EXTRA_DIST=			COPYING \
 				THANKS \
 				$(BUILT_SOURCES)
 
-dist_pkgdata_DATA=		adg-demo.lua \
-				piston.lua
+dist_pkgdata_DATA=		piston.lua
 
 
 # Creating ChangeLog files from git log:
