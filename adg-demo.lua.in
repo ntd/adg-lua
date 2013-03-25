@@ -20,6 +20,7 @@ Boston, MA 02110-1301, USA.
 
 ]]
 
+
 -- Path where the ADG library is installed: used for accessing
 -- shared resources such as icons and GtkBuilder XML files.
 local adg_data_dir = '@ADGDATADIR@'
@@ -32,11 +33,34 @@ if adg_data_dir == '@ADGDATADIR' .. '@' then
     adg_data_dir = '/usr/share/adg'
 end
 
+
 local lgi    = require 'lgi'
 local GLib   = lgi.require 'GLib'
 local Gtk    = lgi.require 'Gtk'
 local Adg    = lgi.require 'Adg'
 local Piston = require 'piston'
+
+
+-- User interface initialization
+
+Adg.gtk_use_default_icons(adg_data_dir)
+
+
+-- Customize error handler
+
+error = function (message)
+    local dialog = Gtk.MessageDialog {
+	dialog_flags = Gtk.DialogFlags.DESTROY_WITH_PARENT,
+	message_type = Gtk.MessageType.ERROR,
+	buttons = Gtk.Buttons.CLOSE,
+	text = message,
+	title = 'Error from adg-demo',
+    }
+    dialog:run()
+end
+
+
+-- Part definition
 
 local piston = Piston.new {
     A       = 55,
@@ -69,22 +93,6 @@ local piston = Piston.new {
     AUTHOR  = 'adg-demo',
     DATE    = os.date('%d/%m/%Y'),
 }
-
-Adg.gtk_use_default_icons(adg_data_dir)
-
-
--- Customize error handler
-
-error = function (message)
-    local dialog = Gtk.MessageDialog {
-	dialog_flags = Gtk.DialogFlags.DESTROY_WITH_PARENT,
-	message_type = Gtk.MessageType.ERROR,
-	buttons = Gtk.Buttons.CLOSE,
-	text = message,
-	title = 'Error from adg-demo',
-    }
-    dialog:run()
-end
 
 
 -- GtkBuilder initialization
