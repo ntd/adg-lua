@@ -100,6 +100,31 @@ function generator.model.hole(part, path)
     return path
 end
 
+local function add_groove(path, part)
+    local data = part.data
+    local pair = Cpml.Pair { x = data.ZGROOVE, y = data.D1 / 2 }
+
+    path:line_to(pair)
+    path:set_named_pair('DGROOVEI_X', pair)
+
+    pair.y = data.D3 / 2
+    path:set_named_pair('DGROOVEY_POS', pair)
+
+    pair.y = data.DGROOVE / 2
+    path:line_to(pair)
+    path:set_named_pair('DGROOVEI_Y', pair)
+
+    pair.x = pair.x + data.LGROOVE
+    path:line_to(pair)
+
+    pair.y = data.D3 / 2
+    path:set_named_pair('DGROOVEX_POS', pair)
+
+    pair.y = data.D1 / 2
+    path:line_to(pair)
+    path:set_named_pair('DGROOVEF_X', pair)
+end
+
 function generator.model.body(part, path)
     path = path or Adg.Path {}
     constructor[path] = generator.model.body
@@ -109,6 +134,8 @@ function generator.model.body(part, path)
     local pair = Cpml.Pair { x = 0, y = data.D1 / 2 }
     path:move_to(pair)
     path:set_named_pair('D1I', pair)
+
+    if data.GROOVE then add_groove(path, part) end
 
     pair.x = data.A - data.B - data.LD2
     path:line_to(pair)
