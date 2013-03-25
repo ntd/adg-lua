@@ -130,8 +130,21 @@ local ui = builder.objects
 
 local canvas = piston.view.detailed
 canvas:set_paper('iso_a4', Gtk.PageOrientation.LANDSCAPE)
-ui.mainCanvas:set_canvas(canvas)
 canvas:autoscale()
+
+local area = ui.mainCanvas
+area:set_canvas(canvas)
+area.on_button_press_event = function (area, event)
+    if event.button == 1 then
+        -- Restore the original zoom
+        area:reset()
+    elseif event.button == 3 then
+        canvas:autoscale()
+        area:queue_draw()
+    end
+
+    return FALSE;
+end
 
 
 -- Help dialog
@@ -235,7 +248,7 @@ ui.mainEdit.on_clicked = function ()
 	update_title_block()
 
 	-- Refresh the GTK+ interface
-	ui.mainCanvas:queue_draw()
+	area:queue_draw()
 
 	lock_ui()
     end
