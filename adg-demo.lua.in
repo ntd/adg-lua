@@ -176,6 +176,14 @@ local function entry_info(widget)
     end
 end
 
+local function update_title_block()
+    local title_block = canvas.title_block
+    for field in pairs(Adg.TitleBlock._property) do
+	local value = piston.data[field:upper()]
+	if value then title_block[field] = value end
+    end
+end
+
 for field in pairs(piston.data) do
     local widget = ui['edit' .. field]
     if widget then
@@ -196,9 +204,7 @@ for field in pairs(piston.data) do
     end
 end
 
-local function view_to_model()
-
-end
+update_title_block()
 
 ui.mainEdit.on_clicked = function ()
     local dialog = ui.wndEdit
@@ -225,6 +231,7 @@ ui.mainEdit.on_clicked = function ()
 	    model:regenerate(piston)
 	    model:changed()
 	end
+	update_title_block()
 
 	-- Refresh the GTK+ interface
 	ui.mainCanvas:queue_draw()
