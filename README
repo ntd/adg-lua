@@ -1,9 +1,11 @@
 Demo programs and examples on how to use the ADG canvas with
-LGI dynamically generated bindings. This requires both ADG
-and LGI installed on your system.
+LGI (Lua bindings generated dynamically). This requires both
+ADG and LGI installed on your system.
 
-This package will install the Lua scripts under $pkgdatadir,
-that is usually /usr/local/share/adg-lua.
+The build system is based on autotools. It basically checks
+that the dependencies are fulfilled at "./configure" time
+and it installs the Lua scripts under $pkgdatadir (usually
+/usr/local/share/adg-lua) during "make install".
 
 The following applications are included:
 
