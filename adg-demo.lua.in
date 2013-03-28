@@ -42,6 +42,7 @@ local Piston = require 'piston'
 
 
 -- Command line parsing
+-----------------------------------------------------------------
 
 if arg[1] == '--version' or arg[1] == '-V' then
     print('adg-demo @VERSION@')
@@ -65,11 +66,20 @@ end
 
 
 -- User interface initialization
+-----------------------------------------------------------------
 
 Adg.gtk_use_default_icons(adg_data_dir)
 
+local function opener(button, dialog)
+    button.on_clicked = function ()
+	dialog:run()
+	Adg.gtk_window_hide_here(dialog)
+    end
+end
+
 
 -- Customize error handler
+-----------------------------------------------------------------
 
 error = function (message)
     local dialog = Gtk.MessageDialog {
@@ -84,6 +94,7 @@ end
 
 
 -- Part definition
+-----------------------------------------------------------------
 
 local piston = Piston.new {
     A       = 55,
@@ -120,6 +131,7 @@ local piston = Piston.new {
 
 
 -- GtkBuilder initialization
+-----------------------------------------------------------------
 
 local builder = Gtk.Builder()
 builder:add_from_file(adg_data_dir .. '/adg-demo.ui')
@@ -127,6 +139,7 @@ local ui = builder.objects
 
 
 -- Canvas settings
+-----------------------------------------------------------------
 
 local canvas = piston.view.detailed
 canvas:set_paper('iso_a4', Gtk.PageOrientation.LANDSCAPE)
@@ -143,36 +156,38 @@ area.on_button_press_event = function (area, event)
         area:queue_draw()
     end
 
-    return FALSE;
+    return false
 end
 
 
 -- Help dialog
+-----------------------------------------------------------------
 
-ui.mainHelp.on_clicked = function ()
-    local dialog = ui.wndHelp
-    dialog.on_response = Gtk.Widget.hide
-    dialog:run()
-end
+opener(ui.mainHelp, ui.wndHelp)
 
 
 -- About dialog
+-----------------------------------------------------------------
 
-ui.mainAbout.on_clicked = function ()
-    local dialog = ui.wndAbout
-    local icon_list = Gtk.Window.get_default_icon_list()
+do
+local dialog = ui.wndAbout
+opener(ui.mainAbout, dialog)
 
-    -- The last icon is supposed to be the largest one:
-    -- check adg_gtk_use_default_icons() implementation.
-    local last_icon = icon_list[#icon_list]
-    dialog:set_logo(last_icon)
+-- The last icon is supposed to be the largest one:
+-- check adg_gtk_use_default_icons() implementation.
+local icon_list = Gtk.Window.get_default_icon_list()
+local last_icon = icon_list[#icon_list]
+dialog:set_logo(last_icon)
 
-    dialog.on_response = Gtk.Widget.hide
-    dialog:run()
 end
 
 
 -- Edit dialog
+-----------------------------------------------------------------
+
+do
+local dialog = ui.wndEdit
+opener(ui.mainEdit, dialog)
 
 local function entry_info(widget)
     if Gtk.ToggleButton:is_type_of(widget) then
@@ -198,14 +213,10 @@ local function update_title_block()
     end
 end
 
-ui.editGROOVE.on_toggled = function (self)
-    local toggled = self:get_active()
-    ui.editZGROOVE:set_sensitive(toggled)
-    ui.editZGROOVELabel:set_sensitive(toggled)
-    ui.editDGROOVE:set_sensitive(toggled)
-    ui.editDGROOVELabel:set_sensitive(toggled)
-    ui.editLGROOVE:set_sensitive(toggled)
-    ui.editLGROOVELabel:set_sensitive(toggled)
+local function lock_ui(status)
+    local sensitiveness = status == false
+    ui.btnApply:set_sensitive(sensitiveness)
+    ui.btnReset:set_sensitive(sensitiveness)
 end
 
 for field in pairs(piston.data) do
@@ -221,109 +232,99 @@ for field in pairs(piston.data) do
 	-- Unlock the UI on every widget change
 	local getter, _, notification = entry_info(widget)
 	widget[notification] = function ()
-	    ui.btnApply:set_sensitive(true)
-	    ui.btnReset:set_sensitive(true)
+	    lock_ui(false)
 	end
 	piston.data[field] = widget[getter](widget)
     end
 end
 
 update_title_block()
+dialog:set_position(Gtk.WindowPosition.MOUSE)
 
-ui.mainEdit.on_clicked = function ()
-    local dialog = ui.wndEdit
-    dialog:set_position(Gtk.WindowPosition.MOUSE);
+ui.editGROOVE.on_toggled = function (self)
+    local toggled = self:get_active()
+    ui.editZGROOVE:set_sensitive(toggled)
+    ui.editZGROOVELabel:set_sensitive(toggled)
+    ui.editDGROOVE:set_sensitive(toggled)
+    ui.editDGROOVELabel:set_sensitive(toggled)
+    ui.editLGROOVE:set_sensitive(toggled)
+    ui.editLGROOVELabel:set_sensitive(toggled)
+end
 
-    local function lock_ui()
-	ui.btnApply:set_sensitive(false)
-	ui.btnReset:set_sensitive(false)
+ui.btnApply.on_clicked = function ()
+    -- Refresh the piston data using the widgets
+    for field in pairs(piston.data) do
+	local widget = ui['edit' .. field]
+	local getter = entry_info(widget)
+	if getter then
+	    piston.data[field] = widget[getter](widget)
+	end
     end
 
-    ui.btnApply.on_clicked = function ()
-	-- Refresh the piston data using the widgets
-	for field in pairs(piston.data) do
-	    local widget = ui['edit' .. field]
-	    local getter = entry_info(widget)
-	    if getter then
-		piston.data[field] = widget[getter](widget)
-	    end
+    -- Regenerate all the models
+    for _, model in pairs(piston.model) do
+	model:reset()
+	model:regenerate(piston)
+	model:changed()
+    end
+    update_title_block()
+
+    -- Refresh the GTK+ interface
+    area:queue_draw()
+
+    lock_ui()
+end
+
+ui.btnReset.on_clicked = function ()
+    -- Update the widgets using the piston data
+    for field, value in pairs(piston.data) do
+	local widget = ui['edit' .. field]
+	local _, setter = entry_info(widget)
+	if setter then
+	    widget[setter](widget, value)
 	end
-
-	-- Regenerate all the models
-	for _, model in pairs(piston.model) do
-	    model:reset()
-	    model:regenerate(piston)
-	    model:changed()
-	end
-	update_title_block()
-
-	-- Refresh the GTK+ interface
-	area:queue_draw()
-
-	lock_ui()
     end
 
-    ui.btnReset.on_clicked = function ()
-	-- Update the widgets using the piston data
-	for field, value in pairs(piston.data) do
-	    local widget = ui['edit' .. field]
-	    local _, setter = entry_info(widget)
-	    if setter then
-		widget[setter](widget, value)
-	    end
-	end
+    lock_ui()
+end
 
-	lock_ui()
-    end
-
-    dialog.on_response = Adg.gtk_window_hide_here
-    dialog:run()
 end
 
 
 -- Save as dialog
+-----------------------------------------------------------------
 
-ui.mainSaveAs.on_clicked = function ()
-    local dialog = ui.wndSaveAs
+do
+local dialog = ui.wndSaveAs
+opener(ui.mainSaveAs, dialog)
+dialog:set_current_name('adg-demo')
 
-    -- Set the default destination file and directory
-    local dir = nil
-    if GLib.UserDirectory then
-	-- Issue: http://github.com/pavouk/lgi/issues/45
-	local dir_type = GLib.UserDirectory.DOCUMENTS or
-			 GLib.UserDirectory.DIRECTORY_DOCUMENTS
-	dir = GLib.get_user_special_dir(dir_type)
-    end
-    dir = dir or GLib.get_home_dir()
-    dialog:set_current_folder(dir)
-    dialog:set_current_name('adg-demo')
+dialog.on_response = function (dialog, response)
+    if response ~= Gtk.ResponseType.OK then return end
 
-    -- Response handling
-    dialog.on_response = function (dialog, response)
-	if response == Gtk.ResponseType.OK then
-	    -- Retrieve the file suffix (format type)
-	    local suffix
-	    for _, radio in pairs(ui.saveAsPng:get_group()) do
-		if radio:get_active() then
-		    suffix = radio:get_tooltip_markup()
-		    break
-		end
-	    end
-	    local file = dialog:get_filename()
-	    if not GLib.str_has_suffix(file, suffix) then
-		file = file .. suffix
-	    end
-	    _, err = canvas:export(file)
-	    if err then error(err) end
+    -- Retrieve the file suffix (format type)
+    local suffix = ''
+    for _, radio in pairs(ui.saveAsPng:get_group()) do
+	if radio:get_active() then
+	    suffix = radio:get_tooltip_markup()
+	    break
 	end
-	dialog:hide()
     end
 
-    dialog:run()
+    -- Forcibly append the proper suffix, if not yet present
+    local file = dialog:get_filename()
+    if not GLib.str_has_suffix(file, suffix) then
+	file = file .. suffix
+    end
+    _, err = canvas:export(file)
+    if err then error(err) end
+end
+
 end
 
 
 -- Print dialog
+-----------------------------------------------------------------
 
 do
 local settings
@@ -372,15 +373,16 @@ end
 
 
 -- Quit command
+-----------------------------------------------------------------
 
 ui.mainQuit.on_clicked = Gtk.main_quit
 
 
--- Main window
+-- Main
+-----------------------------------------------------------------
 
 local window = ui.wndMain
 window.on_delete_event = Gtk.main_quit
 window:show_all()
-
 
 Gtk.main()
