@@ -297,7 +297,7 @@ generator.view = {}
 -- Inject the export method into Adg.Canvas
 rawset(Adg.Canvas, 'export', function (canvas, file, format)
     -- The not explicitely set, the export format is guessed from the file suffix
-    if not format then format = file:match('%.(.*)$') end
+    if not format then format = file:match('%.([^.]+)$') end
 
     local size = canvas:get_size()
     size.x = size.x + canvas:get_left_margin() + canvas:get_right_margin()
