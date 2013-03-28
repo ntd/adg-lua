@@ -543,6 +543,25 @@ function controller.new(data)
 	end
     })
 
+    part.refresh = function (self)
+	-- Regenerate all the models
+	for _, model in pairs(self.model) do
+	    model:reset()
+	    model:regenerate(self)
+	    model:changed()
+	end
+
+	-- Update the title block of all the views
+	for _, view in pairs(self.view) do
+	    local title_block = view.title_block
+	    for field in pairs(Adg.TitleBlock._property) do
+		local value = self.data[field:upper()]
+		if value then title_block[field] = value end
+	    end
+	end
+    end
+
+
     return part
 end
 

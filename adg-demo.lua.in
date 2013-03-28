@@ -213,22 +213,6 @@ local function lock_ui(status)
     ui.btnReset:set_sensitive(sensitiveness)
 end
 
-local function regenerate()
-    -- Regenerate all the models
-    for _, model in pairs(piston.model) do
-	model:reset()
-	model:regenerate(piston)
-	model:changed()
-    end
-
-    -- Update the title block data
-    local title_block = canvas.title_block
-    for field in pairs(Adg.TitleBlock._property) do
-	local value = piston.data[field:upper()]
-	if value then title_block[field] = value end
-    end
-end
-
 for field in pairs(piston.data) do
     local widget = ui['edit' .. field]
     if widget then
@@ -248,7 +232,7 @@ for field in pairs(piston.data) do
     end
 end
 
-regenerate()
+piston:refresh()
 
 ui.editGROOVE.on_toggled = function (self)
     local toggled = self:get_active()
@@ -270,7 +254,7 @@ ui.btnApply.on_clicked = function ()
 	end
     end
 
-    regenerate()
+    piston:refresh()
     area:queue_draw()
     lock_ui()
 end
