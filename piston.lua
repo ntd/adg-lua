@@ -295,22 +295,23 @@ end
 generator.view = {}
 
 -- Inject the export method into Adg.Canvas
-rawset(Adg.Canvas, 'export', function (canvas, file)
-    -- The export format is guessed from the file suffix
-    local suffix = file:match('%..*$')
+rawset(Adg.Canvas, 'export', function (canvas, file, format)
+    -- The not explicitely set, the export format is guessed from the file suffix
+    if not format then format = file:match('%.(.*)$') end
+
     local size = canvas:get_size()
     size.x = size.x + canvas:get_left_margin() + canvas:get_right_margin()
     size.y = size.y + canvas:get_top_margin() + canvas:get_bottom_margin()
 
     -- Create the cairo surface
     local surface
-    if suffix == '.png' and cairo.ImageSurface then
+    if format == 'png' and cairo.ImageSurface then
 	surface = cairo.ImageSurface.create(cairo.Format.RGB24, size.x, size.y)
-    elseif suffix == '.svg' and cairo.SvgSurface then
+    elseif format == 'svg' and cairo.SvgSurface then
 	surface = cairo.SvgSurface.create(file, size.x, size.y)
-    elseif suffix == '.pdf' and cairo.PdfSurface then
+    elseif format == 'pdf' and cairo.PdfSurface then
 	surface = cairo.PdfSurface.create(file, size.x, size.y)
-    elseif suffix == '.ps' and cairo.PsSurface then
+    elseif format == 'ps' and cairo.PsSurface then
 	-- Pull request: http://github.com/pavouk/lgi/pull/46
 	surface = cairo.PsSurface.create(file, size.x, size.y)
 	surface:dsc_comment('%%Title: adg-lua demonstration program')
@@ -319,8 +320,12 @@ rawset(Adg.Canvas, 'export', function (canvas, file)
 	surface:dsc_begin_setup()
 	surface:dsc_begin_page_setup()
 	surface:dsc_comment('%%IncludeFeature: *PageSize A4')
+    elseif not format then
+	format = '<nil>'
     end
-    if not surface then return nil, 'Requested format not supported' end
+    if not surface then
+	return nil, 'Requested format not supported (' .. format .. ')'
+    end
 
     -- Render the canvas content
     local cr = cairo.Context.create(surface)
