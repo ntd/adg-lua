@@ -21,19 +21,6 @@ Boston, MA 02110-1301, USA.
 ]]
 
 
--- Path where the ADG library is installed: used for accessing
--- shared resources such as icons and GtkBuilder XML files.
-local adg_data_dir = '@ADGDATADIR@'
-
--- This hack checks if ADGDATADIR has been expanded by
--- configure and provides a fallback otherwise. It allows to
--- directly run adg-demo.lua.in if ADG is installed in the
--- /usr prefix (as it happens to be on my system ;).
-if adg_data_dir == '@ADGDATADIR' .. '@' then
-    adg_data_dir = '/usr/share/adg'
-end
-
-
 local lgi    = require 'lgi'
 local GLib   = lgi.require 'GLib'
 local Gtk    = lgi.require 'Gtk'
@@ -62,19 +49,6 @@ elseif arg[1] == '--show-extents' or arg[1] == '-E' then
 elseif arg[1] then
     error('Invalid argument (' .. arg[1] .. ')')
     return 1
-end
-
-
--- User interface initialization
------------------------------------------------------------------
-
-Adg.gtk_use_default_icons(adg_data_dir)
-
-local function opener(button, dialog)
-    button.on_clicked = function ()
-	dialog:run()
-	Adg.gtk_window_hide_here(dialog)
-    end
 end
 
 
@@ -133,9 +107,36 @@ local piston = Piston.new {
 -- GtkBuilder initialization
 -----------------------------------------------------------------
 
-local builder = Gtk.Builder()
-builder:add_from_file(adg_data_dir .. '/adg-demo.ui')
-local ui = builder.objects
+local ui
+
+do
+    -- Path where the ADG library is installed: used for accessing
+    -- shared resources such as icons and GtkBuilder XML files.
+    local adg_data_dir = '@ADGDATADIR@'
+
+    -- This hack checks if ADGDATADIR has been expanded by
+    -- configure and provides a fallback otherwise. It allows to
+    -- directly run adg-demo.lua.in if ADG is installed in the
+    -- /usr prefix (as it happens to be on my system ;).
+    if adg_data_dir == '@ADGDATADIR' .. '@' then
+	adg_data_dir = '/usr/share/adg'
+    end
+
+    Adg.gtk_use_default_icons(adg_data_dir)
+
+    local builder = Gtk.Builder()
+    builder:add_from_file(adg_data_dir .. '/adg-demo.ui')
+    ui = builder.objects
+end
+
+local function opener(button, dialog)
+    dialog:set_transient_for(ui.wndMain)
+
+    button.on_clicked = function ()
+	dialog:run()
+	Adg.gtk_window_hide_here(dialog)
+    end
+end
 
 
 -- Canvas settings
@@ -188,6 +189,7 @@ end
 do
 local dialog = ui.wndEdit
 opener(ui.mainEdit, dialog)
+dialog:set_position(Gtk.WindowPosition.MOUSE)
 
 local function entry_info(widget)
     if Gtk.ToggleButton:is_type_of(widget) then
@@ -205,18 +207,26 @@ local function entry_info(widget)
     end
 end
 
-local function update_title_block()
+local function lock_ui(status)
+    local sensitiveness = status == false
+    ui.btnApply:set_sensitive(sensitiveness)
+    ui.btnReset:set_sensitive(sensitiveness)
+end
+
+local function regenerate()
+    -- Regenerate all the models
+    for _, model in pairs(piston.model) do
+	model:reset()
+	model:regenerate(piston)
+	model:changed()
+    end
+
+    -- Update the title block data
     local title_block = canvas.title_block
     for field in pairs(Adg.TitleBlock._property) do
 	local value = piston.data[field:upper()]
 	if value then title_block[field] = value end
     end
-end
-
-local function lock_ui(status)
-    local sensitiveness = status == false
-    ui.btnApply:set_sensitive(sensitiveness)
-    ui.btnReset:set_sensitive(sensitiveness)
 end
 
 for field in pairs(piston.data) do
@@ -238,8 +248,7 @@ for field in pairs(piston.data) do
     end
 end
 
-update_title_block()
-dialog:set_position(Gtk.WindowPosition.MOUSE)
+regenerate()
 
 ui.editGROOVE.on_toggled = function (self)
     local toggled = self:get_active()
@@ -261,17 +270,8 @@ ui.btnApply.on_clicked = function ()
 	end
     end
 
-    -- Regenerate all the models
-    for _, model in pairs(piston.model) do
-	model:reset()
-	model:regenerate(piston)
-	model:changed()
-    end
-    update_title_block()
-
-    -- Refresh the GTK+ interface
+    regenerate()
     area:queue_draw()
-
     lock_ui()
 end
 
