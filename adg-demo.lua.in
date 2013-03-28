@@ -73,13 +73,13 @@ Adg.gtk_use_default_icons(adg_data_dir)
 
 error = function (message)
     local dialog = Gtk.MessageDialog {
-	dialog_flags = Gtk.DialogFlags.DESTROY_WITH_PARENT,
 	message_type = Gtk.MessageType.ERROR,
-	buttons = Gtk.Buttons.CLOSE,
+	buttons = Gtk.ButtonsType.CLOSE,
 	text = message,
 	title = 'Error from adg-demo',
     }
     dialog:run()
+    dialog:destroy()
 end
 
 
