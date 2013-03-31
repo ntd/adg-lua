@@ -86,7 +86,7 @@ local piston = Piston.new(request)
 
 local n = 1
 local canvas = piston.view.detailed
-canvas:set_size_explicit(800 - 20, 600 - 20)
+canvas:set_size_explicit(request.width or 800, request.height or 600)
 canvas:set_top_margin(10)
 canvas:set_bottom_margin(10)
 canvas:set_left_margin(10)
