@@ -10,9 +10,21 @@ and it installs the Lua scripts under $pkgdatadir (usually
 The following applications are included:
 
 * adg-demo.lua
+
   A rewrite of the adg-demo program included in the official
   ADG tarball that leverages the LGI Lua bindings. The GTK+
   interface relies on the GtkBuilder file provided by ADG,
-  usually found in /usr/local/share/adg/adg-demo.ui.
+  usually found in /usr/local/share/adg/adg-demo.ui. This
+  means the ADG must be installed in order to use this script.
+
+* adg-web.lua
+
+  A script that receives as input a space-separated list of
+  key=value tuples and that sends its output to /dev/stdout.
+  The key-value pairs are used to override the data of the
+  piston to render. A typical call would be like:
+
+    lua adg-web.lua A=82 B=26 C=3 D1=12 > result.png
+
 
 Have fun.
