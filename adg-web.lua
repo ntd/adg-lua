@@ -21,9 +21,20 @@ Boston, MA 02110-1301, USA.
 ]]
 
 
+-- Convenient function to load scripts from the same directory
+-- of this very same file
+local function local_require(filename)
+    local FILE = arg[0]
+    local basedir = FILE and FILE:match('^(.*/).*$') or './'
+    local filename = basedir .. filename .. '.lua'
+    return assert(loadfile(filename)())
+end
+
+
 local lgi    = require 'lgi'
 local Adg    = lgi.require 'Adg'
-local Piston = require 'piston'
+local Piston = local_require 'piston'
+
 
 
 -- Command line parsing
