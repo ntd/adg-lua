@@ -299,9 +299,8 @@ rawset(Adg.Canvas, 'export', function (canvas, file, format)
     -- The not explicitely set, the export format is guessed from the file suffix
     if not format then format = file:match('%.([^.]+)$') end
 
-    local size = canvas:get_size()
-    size.x = size.x + canvas:get_left_margin() + canvas:get_right_margin()
-    size.y = size.y + canvas:get_top_margin() + canvas:get_bottom_margin()
+    local size = canvas:get_size():dup()
+    size:transform(canvas:get_global_map())
 
     -- Create the cairo surface
     local surface
