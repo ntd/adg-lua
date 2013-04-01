@@ -32,6 +32,7 @@ end
 
 
 local lgi    = require 'lgi'
+local cairo  = lgi.require 'cairo'
 local Adg    = lgi.require 'Adg'
 local Piston = local_require 'piston'
 
@@ -97,11 +98,21 @@ local piston = Piston.new(request)
 
 local n = 1
 local canvas = piston.view.detailed
-canvas:set_size_explicit(request.width or 800, request.height or 600)
-canvas:set_top_margin(10)
-canvas:set_bottom_margin(10)
-canvas:set_left_margin(10)
-canvas:set_right_margin(10)
+canvas:set_margins(10, 10, 10, 10)
+canvas:set_paddings(0, 0, 0, 0)
+canvas:set_size_explicit(800, 600)
+
+-- Adjust the zoom factor based on the (optional) requested size
+local zoom = 1
+if request.width then
+    local x_zoom = request.width / 800
+    if x_zoom < zoom then zoom = x_zoom end
+end
+if request.height then
+    local y_zoom = request.height / 600
+    if y_zoom < zoom then zoom = y_zoom end
+end
+canvas:set_global_map(cairo.Matrix { xx = zoom, yy = zoom })
 
 piston:refresh()
 canvas:autoscale()
