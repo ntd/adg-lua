@@ -41,7 +41,7 @@ AC_ARG_WITH(adgdatadir,
 AS_IF([test "x$with_adgdatadir" = "x"],
       [with_adgdatadir="$($PKG_CONFIG --variable=datadir adg-1)/adg"
        AS_IF([test -f "$with_adgdatadir/adg-demo.ui"],[:],
-             [AC_MSG_ERROR([adg-demo.ui missing in adgdatadir ($with_adgdatadir)])])])
+             [AC_MSG_WARN([adg-demo.ui missing in adgdatadir ($with_adgdatadir)])])])
 AC_SUBST([ADGDATADIR],${with_adgdatadir})
 
 
