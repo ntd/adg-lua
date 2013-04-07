@@ -1,0 +1,36 @@
+\documentclass[border=11pt]{standalone}
+
+\usepackage{tikz,enumitem}
+\usetikzlibrary{arrows,automata,calc,positioning}
+
+\tikzset{
+    every edge/.style={
+	draw=black,
+	thick,
+    },
+    state/.style={
+	anchor=center,
+	circle,
+	draw=black,
+	thick,
+	minimum height=2cm,
+	inner sep=8pt,
+	outer sep=2pt
+    },
+    stage/.style={
+	anchor=center,
+	rectangle,
+	rounded corners,
+	draw=black,
+	thick,
+	inner sep=8pt,
+	outer sep=2pt
+    },
+}
+
+\newcommand\stage[2]{%
+    \parbox{3cm}{%
+    \textbf{#1}\vspace{2pt}%
+    \begin{itemize}[noitemsep,nosep,leftmargin=1.5em,labelsep=4pt]
+    #2
+    \end{itemize}}}

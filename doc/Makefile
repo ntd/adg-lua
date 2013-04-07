@@ -1,11 +1,11 @@
-all: web.png
+all: adg-web.png
 
 clean:
-	rm -f web.pdf web.png
+	rm -f adg-web.pdf adg-web.png
 
 
-web.pdf: web.tex
-	pdflatex $<
+adg-web.pdf: adg-web.tex base.tex
+	pdflatex adg-web.tex
 
-web.png: web.pdf
+adg-web.png: adg-web.pdf
 	convert -antialias -density 600 $< -flatten -resize 800x $@
