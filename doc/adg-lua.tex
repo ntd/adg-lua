@@ -1,0 +1,51 @@
+\input{base}
+
+\begin{document}
+
+\begin{tikzpicture}[->,>=stealth']
+
+    \node[state] (USER) at (0:5cm) {%
+	\textbf{USER}};
+
+    \node[actor] (GTK) at (72:5cm) {%
+	\ACTOR{GTK\texttt{+}}{%
+	    \item \FILE{libgobject-2.0.so}
+	    \item \FILE{libgtk-3.so}
+	    \item \FILE{adg-demo.ui}}};
+
+    \node[actor] (LUA) at (144:5cm) {%
+	\ACTOR{Lua}{%
+	    \item \FILE{adg-demo.lua}
+	    \item \FILE{piston.lua}}};
+
+    \node[actor] (ADG) at (216:5cm) {%
+	\ACTOR{ADG canvas}{%
+	    \item \FILE{libadg-1.so}
+	    \item \FILE{libcpml-1.so}}};
+
+    \node[actor] (CAIRO) at (288:5cm) {%
+	\ACTOR{Cairo library}{%
+	    \item \FILE{libcairo.so}
+	    \item PangoCairo
+	    \item FreeType
+	    \item FontConfig}};
+
+
+    \path (USER)  edge[bend left=-18] node[above right]
+	{\textit{User interaction}} (GTK);
+    \path (GTK)   edge[bend left=-18] node[above left]
+	{\textit{Signals}} (LUA);
+    \path (LUA)   edge[bend left=-18] node[left]
+	{\textit{LGI bindings}} (ADG);
+    \path (ADG)   edge[bend left=-18] node[below left]
+	{\textit{API calls}} (CAIRO);
+    \path (CAIRO) edge[bend left=-18] node[below right]
+	{\textit{Screen updates}} (USER);
+
+    \path (GTK) edge node[right]
+	{\textit{API calls}} (CAIRO);
+    \path (LUA) edge[bend left=-18]  node[above right]
+	{\textit{LGI bindings}} (CAIRO);
+\end{tikzpicture}
+\end{document}
+
