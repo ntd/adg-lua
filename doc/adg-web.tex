@@ -4,29 +4,30 @@
 
 \begin{tikzpicture}[->,>=stealth']
 
-    \node[state, minimum width=2cm, outer sep=2pt] (USER) at (0:5cm) {%
+    \node[state] (USER) at (0:5cm) {%
 	\textbf{USER}};
 
-    \node[stage] (PHP) at (72:5cm) {%
-	\stage{PHP}{%
+    \node[actor] (PHP) at (72:5cm) {%
+	\ACTOR{PHP}{%
 	    \item SilverStripe
 	    \item silverstripe-adg
-	    \item Piston.php}};
+	    \item \FILE{Adg.php}
+	    \item \FILE{Piston.php}}};
 
-    \node[stage] (LUA) at (144:5cm) {%
-	\stage{Lua}{%
-	    \item adg-web.lua
-	    \item piston.lua}};
+    \node[actor] (LUA) at (144:5cm) {%
+	\ACTOR{Lua}{%
+	    \item \FILE{adg-web.lua}
+	    \item \FILE{piston.lua}}};
 
-    \node[stage] (ADG) at (216:5cm) {%
-	\stage{ADG canvas}{%
-	    \item libadg-1.so
-	    \item libcpml-1.so}};
+    \node[actor] (ADG) at (216:5cm) {%
+	\ACTOR{ADG canvas}{%
+	    \item \FILE{libadg-1.so}
+	    \item \FILE{libcpml-1.so}}};
 
-    \node[stage] (CAIRO) at (288:5cm) {%
-	\stage{Cairo library}{%
-	    \item libcairo.so
-	    \item Pango
+    \node[actor] (CAIRO) at (288:5cm) {%
+	\ACTOR{Cairo library}{%
+	    \item \FILE{libcairo.so}
+	    \item PangoCairo
 	    \item FreeType
 	    \item FontConfig}};
 

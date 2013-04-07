@@ -1,7 +1,7 @@
 \documentclass[border=11pt]{standalone}
 
-\usepackage{tikz,enumitem}
-\usetikzlibrary{arrows,automata,calc,positioning}
+\usepackage{enumitem,tikz}
+\usetikzlibrary{arrows}
 
 \tikzset{
     every edge/.style={
@@ -17,7 +17,7 @@
 	inner sep=8pt,
 	outer sep=2pt
     },
-    stage/.style={
+    actor/.style={
 	anchor=center,
 	rectangle,
 	rounded corners,
@@ -28,9 +28,14 @@
     },
 }
 
-\newcommand\stage[2]{%
-    \parbox{3cm}{%
-    \textbf{#1}\vspace{2pt}%
-    \begin{itemize}[noitemsep,nosep,leftmargin=1.5em,labelsep=4pt]
+\newcommand\FILE[1]{%
+    \texttt{#1}}
+
+\newcommand\ACTOR[2]{%
+    \parbox{32mm}{%
+    \textbf{#1}\vspace{3pt}%
+    \begin{itemize}[label={$\vcenter{\hbox{\tiny$\bullet$}}$},
+		    noitemsep,nosep,leftmargin=8pt,labelsep=3pt]
+    \small
     #2
     \end{itemize}}}
