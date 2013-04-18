@@ -1,8 +1,8 @@
 package = '@PACKAGE@'
 version = '@VERSION@-1'
 source = {
-    url = 'http://sourceforge.net/projects/adg/files/@PACKAGE_TARNAME@/@PACKAGE_TARNAME@-@VERSION@.tar.bz2',
-    md5 = '@MD5@',
+    url = 'http://downloads.sourceforge.net/adg/@PACKAGE_TARNAME@-@VERSION@.tar.bz2',
+    md5 = '29d1d682358af4df68b689aefabee9ff',
     dir = '@PACKAGE_TARNAME@-@VERSION@'
 }
 description = {
