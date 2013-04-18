@@ -1,0 +1,38 @@
+package = '@PACKAGE@'
+version = '@VERSION@-1'
+source = {
+    url = 'http://sourceforge.net/projects/adg/files/@PACKAGE_TARNAME@/@PACKAGE_TARNAME@-@VERSION@.tar.bz2',
+    md5 = '@MD5@',
+    dir = '@PACKAGE_TARNAME@-@VERSION@'
+}
+description = {
+   summary = 'Demo on how to use the ADG canvas with Lua',
+   detailed = [[
+      Demo programs and examples on how to use the ADG canvas from
+      Lua throught LGI (Lua bindings generated dynamically). It is
+      *not* needed in order to use the ADG canvas from Lua: ADG and
+      LGI are just enough for that purpose.
+   ]],
+   homepage = '@PACKAGE_URL@',
+   license = 'LGPL2.1+'
+}
+dependencies = {
+   'lua >= @LUA_VERSION@',
+   'lgi >= @LGI_VERSION@',
+}
+build = {
+    type = 'command',
+    build_command = [[
+	LUA=$(LUA) \\
+	CPPFLAGS=-I$(LUA_INCDIR) \\
+	./configure \\
+	    --prefix=$(PREFIX) \\
+	    --libdir=$(LIBDIR) \\
+	    --datadir=$(LUADIR) && \\
+	make clean && \\
+	make
+    ]],
+    install_command = [[
+	make install
+    ]]
+}

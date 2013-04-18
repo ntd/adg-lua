@@ -6,5 +6,6 @@
 /config.status
 /configure
 /INSTALL
+/rockspec
 Makefile
 Makefile.in

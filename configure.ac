@@ -8,7 +8,7 @@ m4_define([adg_prereq],0.7.2)
 
 dnl Depends on the same autoconf version of the ADG project
 AC_PREREQ([2.62])
-AC_INIT([adg-lua],adg_lua_version,[http://dev.entidi.com/p/adg-lua/],[adg-lua],[http://adg.entidi.com/])
+AC_INIT([Adg Lua],adg_lua_version,[http://dev.entidi.com/p/adg-lua/],[adg-lua],[http://adg.entidi.com/])
 AC_CONFIG_SRCDIR([configure.ac])
 AC_CONFIG_AUX_DIR([build])
 AC_CONFIG_MACRO_DIR([build])
@@ -28,6 +28,7 @@ m4_ifdef([AM_COND_IF],[],
 # Check for programs
 
 AX_PROG_LUA(adg_prereq)
+AC_PATH_PROG([MD5SUM],[md5sum],[/usr/bin/md5sum])
 PKG_PROG_PKG_CONFIG
 
 
@@ -44,10 +45,14 @@ AS_IF([test "x$with_adgdatadir" = "x"],
              [AC_MSG_WARN([adg-demo.ui missing in adgdatadir ($with_adgdatadir)])])])
 AC_SUBST([ADGDATADIR],${with_adgdatadir})
 
+dnl Actually there is no sane way to get the LGI version,
+dnl so use an hardcoded value instead (needed by rockspec.in).
+AC_SUBST([LGI_VERSION],[0.7.1])
 
 # Generation
 
 AC_CONFIG_FILES([adg-demo.lua
+                 rockspec
                  Makefile])
 AC_OUTPUT
 
